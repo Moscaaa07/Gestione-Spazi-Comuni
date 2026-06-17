@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestione Spazi Comuni</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .google-card {
+            max-width: 450px;
+            margin: 80px auto;
+            padding: 40px;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .google-logo {
+            display: block;
+            margin: 0 auto 20px;
+            max-height: 40px;
+        }
+        .status-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        .dot-active { background-color: #28a745; }
+        .dot-inactive { background-color: #dc3545; }
+
+        #app-nav {
+            position: sticky;
+            top: 0;
+            z-index: 1060;
+            width: 100%;
+        }
+
+        #nav-notifications {
+            position: relative;
+        }
+
+        #notification-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            font-size: 0.65rem;
+            min-width: 20px;
+            line-height: 1.3;
+        }
+
+        #notifications-panel {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            width: 320px;
+            max-height: 320px;
+            overflow-y: auto;
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,.15);
+            border-radius: 0.5rem;
+            display: none;
+            padding: 0.75rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            z-index: 1070;
+        }
+
+        .notification-item {
+            background: #f8f9fa;
+            border: 1px solid rgba(0,0,0,.08);
+            border-radius: 0.45rem;
+        }
+
+        #theme-panel {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            width: 260px;
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,.15);
+            border-radius: 0.5rem;
+            display: none;
+            padding: 0.75rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            z-index: 1070;
+        }
+
+        #theme-panel button {
+            width: 100%;
+            margin-bottom: 0.5rem;
+            text-align: left;
+        }
+
+        body.theme-light {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #212529;
+        }
+        body.theme-light .card,
+        body.theme-light .google-card,
+        body.theme-light .modal-content {
+            background-color: #ffffff;
+            color: #212529;
+            border: 1px solid #e0e0e0;
+        }
+        body.theme-light .navbar {
+            background: linear-gradient(90deg, #2c3e50 0%, #34495e 100%) !important;
+            color: #ffffff;
+        }
+        /* Tema 'Scuro' rimosso */
+        /* Tutte le regole specifiche del tema scuro sono state eliminate per rispettare la richiesta dell'utente. */
+        /* Background uniformity fix: force full-viewport non-repeating backgrounds to avoid visual seams/artifacts */
+        html, body { height: 100%; min-height: 100%; margin: 0; padding: 0; }
+        body, body::before, body::after {
+            background-repeat: no-repeat !important;
+            background-size: cover !important;
+            background-position: center center !important;
+            background-attachment: fixed !important;
+            -webkit-transform: translate3d(0,0,0); /* GPU hint to avoid rendering seams */
+            -webkit-backface-visibility: hidden;
+        }
+        body::before, body::after { position: fixed !important; inset: 0 !important; content: "" !important; pointer-events: none !important; z-index: -1 !important; }
+
+        /* Theme-specific safe defaults to avoid tiled overlays */
+        body.theme-light, body.theme-retro, body.theme-neon, body.theme-natura, body.theme-cielo {
+            background-repeat: no-repeat !important;
+            background-size: cover !important;
+            background-position: center center !important;
+            background-attachment: fixed !important;
+        }
+
+        /* Disable small repeating grid overlay that could produce visible seams in some neon backgrounds */
+        body.theme-neon::before { background-image: none !important; background-size: cover !important; opacity: 0.12 !important; }
+        body.theme-neon::after { background-size: cover !important; opacity: 0.12 !important; }
+        body.theme-neon #spaces-list .list-group-item.bg-white,
+        body.theme-neon #admin-spaces-list .list-group-item.bg-white,
+        body.theme-neon #timeline-placeholder.bg-white,
+        body.theme-neon #daily-timeline-container.bg-white,
+        body.theme-neon #main-section .card.bg-light,
+        body.theme-neon #profile-section .card.bg-light {
+            background: #05070d !important;
+            color: #f4fbff !important;
+            border-color: rgba(255,255,255,0.08) !important;
+        }
+        body.theme-neon #spaces-list .list-group-item.bg-white h6,
+        body.theme-neon #spaces-list .list-group-item.bg-white small,
+        body.theme-neon #admin-spaces-list .list-group-item.bg-white h6,
+        body.theme-neon #admin-spaces-list .list-group-item.bg-white small,
+        body.theme-neon #timeline-placeholder h5,
+        body.theme-neon #timeline-placeholder p,
+        body.theme-neon #daily-timeline-container,
+        body.theme-neon #main-section .card.bg-light h6,
+        body.theme-neon #main-section .card.bg-light p,
+        body.theme-neon #profile-section .card.bg-light h6,
+        body.theme-neon #profile-section .card.bg-light p {
+            color: #f4fbff !important;
+        }
+        body.theme-neon #spaces-list .list-group-item.bg-white .badge,
+        body.theme-neon #admin-spaces-list .list-group-item.bg-white .badge {
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            color: #031017 !important;
+        }
+        body.theme-dark .list-group-item { background: transparent; border: 1px solid rgba(255,255,255,0.02); }
+        body.theme-dark .badge { background: linear-gradient(90deg, var(--dark-accent), var(--dark-accent-2)); color: #022025; box-shadow: 0 6px 14px rgba(107,214,255,0.06); }
+        body.theme-dark .google-card { border-radius: 12px; }
+
+        /* Neon theme (enhanced): dynamic background, neon accents and glow */
+        :root {
+            --neon-cyan: #7ef9ff;
+            --neon-pink: #ff5ad6;
+            --neon-violet: #9b7bff;
+            --neon-bg-dark: #03030a;
+        }
+        body.theme-neon {
+            position: relative;
+            overflow-x: hidden;
+            background:
+                radial-gradient(circle at 12% 18%, rgba(126,249,255,0.18) 0%, rgba(126,249,255,0.06) 16%, transparent 36%),
+                radial-gradient(circle at 82% 12%, rgba(255,90,214,0.16) 0%, rgba(255,90,214,0.05) 18%, transparent 38%),
+                radial-gradient(circle at 50% 100%, rgba(155,123,255,0.18) 0%, rgba(155,123,255,0.04) 22%, transparent 52%),
+                linear-gradient(135deg, #02030a 0%, #050816 45%, #02030a 100%);
+            color: #eaffff;
+            background-attachment: fixed;
+            animation: neonShift 14s ease-in-out infinite;
+        }
+        body.theme-neon::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(126,249,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,90,214,0.04) 1px, transparent 1px);
+            background-size: 120px 120px;
+            mask-image: radial-gradient(circle at center, black 0%, rgba(0,0,0,0.75) 58%, transparent 100%);
+            opacity: 0.45;
+        }
+        body.theme-neon::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.18) 65%, rgba(0,0,0,0.48) 100%);
+        }
+        @keyframes neonShift {
+            0% { filter: hue-rotate(0deg) saturate(1); }
+            50% { filter: hue-rotate(8deg) saturate(1.08); }
+            100% { filter: hue-rotate(0deg); }
+        }
+        body.theme-neon .card,
+        body.theme-neon .google-card,
+        body.theme-neon .modal-content {
+            position: relative;
+            overflow: hidden;
+            background:
+                linear-gradient(180deg, rgba(9,14,24,0.92) 0%, rgba(4,7,14,0.88) 100%);
+            color: #eaffff;
+            border: 1px solid rgba(126,249,255,0.14);
+            box-shadow:
+                0 18px 50px rgba(0,0,0,0.48),
+                0 0 0 1px rgba(255,90,214,0.04) inset,
+                0 0 28px rgba(126,249,255,0.08),
+                0 0 20px rgba(255,90,214,0.05) inset;
+            backdrop-filter: blur(6px);
+            border-radius: 14px;
+        }
+        body.theme-neon .card::before,
+        body.theme-neon .google-card::before,
+        body.theme-neon .modal-content::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(126,249,255,0.08), transparent 35%, rgba(255,90,214,0.06));
+            pointer-events: none;
+        }
+        body.theme-neon .navbar {
+            background: linear-gradient(90deg, rgba(5,8,18,0.96), rgba(9,11,22,0.92), rgba(5,8,18,0.96)) !important;
+            color: #eaffff;
+            box-shadow: 0 10px 26px rgba(0,0,0,0.58), 0 0 24px rgba(126,249,255,0.06);
+            border-bottom: 1px solid rgba(126,249,255,0.12);
+            backdrop-filter: blur(10px);
+        }
+        body.theme-neon h5,
+        body.theme-neon .card-title {
+            color: var(--neon-cyan);
+            font-weight: 800;
+            text-shadow: 0 0 10px rgba(126,249,255,0.18), 0 0 18px rgba(255,90,214,0.08);
+            letter-spacing: 0.02em;
+        }
+        body.theme-neon .text-muted { color: rgba(234,255,255,0.7) !important; }
+        body.theme-neon .form-control,
+        body.theme-neon .form-select {
+            background: rgba(4,16,24,0.9);
+            color: #eaffff;
+            border: 1px solid rgba(126,249,255,0.12);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+        body.theme-neon .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23f4fbff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+        }
+        body.theme-neon .form-control::placeholder { color: rgba(234,255,255,0.42); }
+        body.theme-neon .form-control:focus,
+        body.theme-neon .form-select:focus {
+            border-color: rgba(126,249,255,0.6);
+            box-shadow: 0 0 0 0.2rem rgba(126,249,255,0.14), 0 0 18px rgba(255,90,214,0.08);
+            background: rgba(6,20,30,0.96);
+            color: #f7ffff;
+        }
+        body.theme-neon a { color: var(--neon-cyan); text-shadow: 0 0 10px rgba(126,249,255,0.16); }
+        body.theme-neon .btn-primary {
+            background: linear-gradient(90deg, var(--neon-cyan) 0%, var(--neon-violet) 52%, var(--neon-pink) 100%);
+            color: #031017;
+            border: none;
+            box-shadow: 0 10px 24px rgba(126,249,255,0.16), 0 0 20px rgba(255,90,214,0.12);
+            transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+        }
+        body.theme-neon .btn-primary:hover,
+        body.theme-neon .btn-primary:focus {
+            transform: translateY(-1px);
+            filter: brightness(1.05);
+            box-shadow: 0 14px 28px rgba(126,249,255,0.18), 0 0 28px rgba(255,90,214,0.16);
+        }
+        body.theme-neon .btn-outline-light {
+            color: #dffcff;
+            border-color: rgba(126,249,255,0.18);
+            box-shadow: 0 0 12px rgba(126,249,255,0.05) inset;
+            background: rgba(5,12,22,0.35);
+        }
+        body.theme-neon .btn-outline-light:hover {
+            color: #041018;
+            background: linear-gradient(90deg, rgba(126,249,255,0.88), rgba(255,90,214,0.9));
+            border-color: transparent;
+        }
+        body.theme-neon .list-group-item {
+            background: rgba(5,10,18,0.5);
+            border: 1px solid rgba(126,249,255,0.06);
+            color: #eaffff;
+        }
+        body.theme-neon .badge {
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-violet), var(--neon-pink));
+            color: #031017;
+            box-shadow: 0 6px 16px rgba(126,249,255,0.12);
+        }
+        body.theme-neon .small { color: rgba(234,255,255,0.86); }
+        body.theme-neon .navbar .nav-link,
+        body.theme-neon .navbar-brand {
+            color: #f1ffff !important;
+            text-shadow: 0 0 10px rgba(126,249,255,0.12);
+        }
+        body.theme-neon .navbar .nav-link:hover,
+        body.theme-neon .navbar-brand:hover {
+            color: var(--neon-cyan) !important;
+        }
+        body.theme-neon #admin-panel {
+            background: linear-gradient(180deg, rgba(10,16,28,0.98), rgba(4,8,16,0.95));
+            border: 1px solid rgba(126,249,255,0.18) !important;
+            box-shadow: 0 18px 50px rgba(0,0,0,0.52), 0 0 24px rgba(126,249,255,0.08);
+        }
+        body.theme-neon #admin-panel .card-title,
+        body.theme-neon #admin-panel h6,
+        body.theme-neon #admin-panel h5,
+        body.theme-neon #admin-panel p,
+        body.theme-neon #admin-panel label,
+        body.theme-neon #admin-panel strong,
+        body.theme-neon #admin-panel .text-dark,
+        body.theme-neon #admin-panel .form-text,
+        body.theme-neon #admin-panel .small {
+            color: #effcff !important;
+            text-shadow: 0 0 8px rgba(126,249,255,0.08);
+        }
+        body.theme-neon #admin-panel .card-title,
+        body.theme-neon #admin-panel h6 {
+            color: var(--neon-cyan) !important;
+        }
+        body.theme-neon #admin-panel .border-end,
+        body.theme-neon #admin-panel .border-top {
+            border-color: rgba(126,249,255,0.14) !important;
+        }
+        body.theme-neon #admin-panel .form-control,
+        body.theme-neon #admin-panel .form-select {
+            background: rgba(3,12,20,0.92);
+            color: #f4ffff !important;
+            border-color: rgba(126,249,255,0.18);
+        }
+        body.theme-neon #admin-panel .form-control::placeholder {
+            color: rgba(234,255,255,0.52);
+        }
+        body.theme-neon #admin-panel .form-control:focus,
+        body.theme-neon #admin-panel .form-select:focus {
+            border-color: rgba(126,249,255,0.78);
+            box-shadow: 0 0 0 0.2rem rgba(126,249,255,0.16), 0 0 20px rgba(255,90,214,0.1);
+        }
+        body.theme-neon #admin-panel .list-group-item {
+            background: rgba(4,10,18,0.78);
+            color: #effcff;
+            border-color: rgba(126,249,255,0.08);
+        }
+        body.theme-neon #admin-panel .btn-danger {
+            background: linear-gradient(90deg, #ff5ad6, #9b7bff);
+            border: none;
+            color: #07101a;
+            box-shadow: 0 8px 18px rgba(255,90,214,0.16);
+        }
+        body.theme-neon #admin-panel .btn-success {
+            background: linear-gradient(90deg, #7ef9ff, #8ef7c8);
+            border: none;
+            color: #031017;
+            box-shadow: 0 8px 18px rgba(126,249,255,0.16);
+        }
+        body.theme-neon #admin-panel .btn-outline-secondary,
+        body.theme-neon #admin-panel .btn-outline-primary,
+        body.theme-neon #admin-panel .btn-outline-danger,
+        body.theme-neon #admin-panel .btn-outline-warning {
+            color: #effcff;
+            border-color: rgba(126,249,255,0.18);
+        }
+        body.theme-neon #admin-panel .btn-outline-secondary:hover,
+        body.theme-neon #admin-panel .btn-outline-primary:hover,
+        body.theme-neon #admin-panel .btn-outline-danger:hover,
+        body.theme-neon #admin-panel .btn-outline-warning:hover {
+            color: #041018;
+            background: linear-gradient(90deg, rgba(126,249,255,0.9), rgba(255,90,214,0.88));
+            border-color: transparent;
+        }
+        body.theme-dark #main-section .card,
+        body.theme-neon #main-section .card {
+            background: linear-gradient(180deg, rgba(10,16,28,0.98), rgba(4,8,16,0.95));
+            border-color: rgba(126,249,255,0.16);
+            box-shadow: 0 18px 50px rgba(0,0,0,0.48), 0 0 22px rgba(126,249,255,0.06);
+        }
+        body.theme-dark #main-section .card-title,
+        body.theme-dark #main-section h5,
+        body.theme-neon #main-section .card-title,
+        body.theme-neon #main-section h5,
+        body.theme-dark #main-section h6,
+        body.theme-neon #main-section h6 {
+            color: #effcff !important;
+            text-shadow: 0 0 8px rgba(126,249,255,0.1);
+        }
+        body.theme-dark #main-section .text-muted,
+        body.theme-dark #main-section .text-secondary,
+        body.theme-dark #main-section .form-label,
+        body.theme-dark #main-section .form-text,
+        body.theme-dark #main-section .small,
+        body.theme-neon #main-section .text-muted,
+        body.theme-neon #main-section .text-secondary,
+        body.theme-neon #main-section .form-label,
+        body.theme-neon #main-section .form-text,
+        body.theme-neon #main-section .small {
+            color: #dff7ff !important;
+        }
+        body.theme-dark #main-section .card-title.text-danger,
+        body.theme-neon #main-section .card-title.text-danger,
+        body.theme-dark #main-section .text-primary,
+        body.theme-neon #main-section .text-primary {
+            color: #7ef9ff !important;
+        }
+        body.theme-dark #main-section .form-control,
+        body.theme-dark #main-section .form-select,
+        body.theme-neon #main-section .form-control,
+        body.theme-neon #main-section .form-select {
+            background: rgba(3,12,20,0.92);
+            color: #f4ffff !important;
+            border-color: rgba(126,249,255,0.18);
+        }
+        body.theme-dark #main-section .form-control::placeholder,
+        body.theme-neon #main-section .form-control::placeholder {
+            color: rgba(234,255,255,0.5);
+        }
+        body.theme-dark #main-section .form-control:focus,
+        body.theme-dark #main-section .form-select:focus,
+        body.theme-neon #main-section .form-control:focus,
+        body.theme-neon #main-section .form-select:focus {
+            border-color: rgba(126,249,255,0.72);
+            box-shadow: 0 0 0 0.2rem rgba(126,249,255,0.14), 0 0 20px rgba(255,90,214,0.08);
+        }
+        body.theme-dark #main-section .list-group-item,
+        body.theme-neon #main-section .list-group-item {
+            background: rgba(4,10,18,0.78);
+            color: #effcff;
+            border-color: rgba(126,249,255,0.08);
+        }
+        body.theme-dark #main-section #timeline-placeholder,
+        body.theme-neon #main-section #timeline-placeholder,
+        body.theme-dark #main-section #timeline-card,
+        body.theme-neon #main-section #timeline-card {
+            background: linear-gradient(180deg, rgba(8,14,24,0.98), rgba(3,8,16,0.96)) !important;
+            color: #effcff !important;
+        }
+        body.theme-dark #main-section #timeline-placeholder h5,
+        body.theme-dark #main-section #timeline-placeholder p,
+        body.theme-neon #main-section #timeline-placeholder h5,
+        body.theme-neon #main-section #timeline-placeholder p,
+        body.theme-dark #main-section #timeline-title,
+        body.theme-neon #main-section #timeline-title {
+            color: #effcff !important;
+        }
+        body.theme-dark #main-section #daily-timeline-container,
+        body.theme-neon #main-section #daily-timeline-container {
+            background: rgba(2,8,16,0.96) !important;
+            border-color: rgba(126,249,255,0.16) !important;
+            color: #effcff !important;
+        }
+        body.theme-dark #main-section .btn-secondary,
+        body.theme-neon #main-section .btn-secondary {
+            background: linear-gradient(90deg, rgba(126,249,255,0.16), rgba(155,123,255,0.18));
+            color: #effcff;
+            border-color: rgba(126,249,255,0.2);
+        }
+        body.theme-dark #main-section .btn-success,
+        body.theme-neon #main-section .btn-success {
+            background: linear-gradient(90deg, #7ef9ff, #8ef7c8);
+            color: #031017;
+            border: none;
+        }
+        body.theme-dark #admin-panel #admin-form-title,
+        body.theme-dark #admin-panel .col-md-7 h6,
+        body.theme-dark #admin-panel .card-title,
+        body.theme-dark #admin-panel h6 {
+            color: var(--dark-accent) !important;
+            text-shadow: 0 0 8px rgba(107,214,255,0.12);
+        }
+
+        body.theme-retro {
+            background: linear-gradient(135deg, #ff9db8 0%, #d85a78 100%);
+            color: #262626;
+        }
+        body.theme-retro .card,
+        body.theme-retro .google-card,
+        body.theme-retro .modal-content {
+            background: rgba(255, 245, 248, 0.98);
+            border: 2px solid #c44569;
+            color: #262626;
+            box-shadow: 0 4px 12px rgba(196, 69, 105, 0.18);
+        }
+        body.theme-retro .navbar {
+            background: linear-gradient(90deg, #c44569 0%, #f78fb3 100%) !important;
+            color: #ffffff;
+        }
+        body.theme-retro h5, body.theme-retro .card-title { color: #c44569; font-weight: 700; }
+        body.theme-retro .text-muted { color: rgba(38,38,38,0.7) !important; }
+        body.theme-retro .form-control, body.theme-retro .form-select { background: #fff; color: #262626; border-color: #c44569; }
+        
+        /* Stili per i bordi richiesti dallo schema */
+        .border-riquadro-rosso { border: 2.5px solid #dc3545 !important; }
+        .border-riquadro-azzurro { border: 2.5px solid #007bff !important; }
+        
+        /* Timeline slots style */
+        .timeline-slot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 12px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-section" class="container">
+        <div class="google-card shadow-sm">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google Logo" class="google-logo">
+            <h3 class="text-center mb-1">Accedi</h3>
+            <p class="text-center text-muted small mb-4">per procedere su Spazi Comuni</p>
+            
+            <div class="mb-3">
+                <input type="email" id="username-input" class="form-control form-control-lg" placeholder="Indirizzo email" required onkeydown="if(event.key === 'Enter') login()">
+            </div>
+            <div class="mb-4">
+                <input type="password" id="password-input" class="form-control form-control-lg" placeholder="Inserisci la password" required onkeydown="if(event.key === 'Enter') login()">
+                <div class="mt-2 text-start">
+                    <a href="#" onclick="openResetModal(event)" class="text-decoration-none small fw-semibold">Avete dimenticato la password?</a>
+                </div>
+            </div>
+            
+            <p class="text-muted small text-start mb-4">
+                Accedendo, accetti la nostra Privacy Policy e le Condizioni d'Uso.
+            </p>
+            
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="#" onclick="openRegisterModal(event)" class="text-decoration-none fw-semibold text-danger border border-danger p-2 rounded">Crea un account</a>
+                <button onclick="login()" class="btn btn-primary px-4 py-2 fw-semibold">Avanti</button>
+            </div>
+        </div>
+    </div>
+
+    <nav id="app-nav" class="navbar navbar-dark bg-dark mb-4" style="display: none;">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">🏫 Portale Spazi Comuni</span>
+            <div class="d-flex align-items-center">
+                <div id="nav-theme" class="me-3 position-relative">
+                    <button type="button" onclick="toggleThemePanel()" class="btn btn-outline-light btn-sm position-relative">
+                        <span class="fs-5">🎨</span>
+                    </button>
+                    <div id="theme-panel">
+                        <div class="fw-bold mb-2" style="color: #212529;">Scegli tema</div>
+                        <button class="btn btn-sm" style="background-color: #f0f0f0; color: #212529; border: 1px solid #ccc;" onclick="selectTheme('theme-light')">☀️ Chiaro</button>
+                        <button class="btn btn-sm" style="background: linear-gradient(90deg,#06f6d4,#ff4da6); color:#05060a; border: 1px solid rgba(255,255,255,0.06);" onclick="selectTheme('theme-neon')">⚡ Neon</button>
+                        <button class="btn btn-sm" style="background-color: #ffb3d9; color: #2a2a2a; border: 2px solid #ff6b9d;" onclick="selectTheme('theme-retro')">🌸 Retro '80</button>
+                    </div>
+                </div>
+                <div id="nav-notifications" class="me-3">
+                    <button type="button" onclick="toggleNotificationsPanel()" class="btn btn-outline-light btn-sm position-relative">
+                        <span class="fs-5">📬</span>
+                        <span id="notification-badge" class="badge bg-danger rounded-pill" style="display:none;">0</span>
+                    </button>
+                    <div id="notifications-panel">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="fw-bold text-dark">Notifiche</div>
+                            <button type="button" class="btn btn-link btn-sm p-0" onclick="toggleSelectAllNotifications()">Seleziona tutte</button>
+                        </div>
+                        <div id="notifications-list" class="mb-2"></div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary w-50" onclick="markNotificationsRead()">Segna come lette</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger w-50" onclick="deleteSelectedNotifications()">Elimina</button>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-outline-light me-3" onclick="goHomepage()" title="Torna alla home">🏠 Home</button>
+                <span id="user-display" class="navbar-text text-white fw-bold me-3" onclick="openUserProfile()" style="cursor:pointer; text-decoration: underline;" title="Apri profilo"></span>
+                <div id="nav-mascot" class="me-2 position-relative">
+                    <button type="button" onclick="toggleMascotPanel()" class="btn btn-outline-light btn-sm position-relative" title="Apri Pinguino Guida">
+                        <span class="fs-5">🐧</span>
+                    </button>
+                    <div id="mascot-panel" style="display:none; position:absolute; right:0; top:100%; width:320px; z-index:1080;">
+                        <div class="card p-3 shadow-sm">
+                            <div class="d-flex align-items-center mb-2">
+                                <div style="font-size:2rem;">🐧</div>
+                                <div class="ms-2">
+                                    <div class="fw-bold">Pinguino Guida</div>
+                                    <div class="small text-muted">Il tuo compagno di pausa</div>
+                                </div>
+                            </div>
+                            <div id="mascot-message" class="small text-dark mb-3">Ciao! Vuoi un consiglio o una battuta?</div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-primary flex-grow-1" onclick="mascotNext()">Altro</button>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="mascotRemindLater(30)">Ricordami 30m</button>
+                            </div>
+                            <div class="d-flex justify-content-end mt-2">
+                                <button class="btn btn-sm btn-link text-danger p-0" onclick="toggleMascotPanel()">Chiudi</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="logout()" class="btn btn-outline-light btn-sm fw-semibold">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="main-section" class="container-fluid px-4" style="display: none;">
+        <div class="row g-4">
+            
+            <div class="col-md-4">
+                <div class="card p-3 shadow-sm mb-4 border-riquadro-rosso">
+                    <h5 class="card-title fw-bold text-danger">🗓️ Prenota uno Spazio</h5>
+                    
+                    <div class="mb-2">
+                        <label class="form-label text-muted small mb-0 fw-semibold">Cerca per Nome Aula</label>
+                        <input type="text" id="filter-name" class="form-control form-control-sm mb-2" placeholder="Inserisci nome spazio..." oninput="loadSpaces()">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small mb-0 fw-semibold">Scegli la Sede</label>
+                        <select id="filter-location" class="form-select form-select-sm mb-2" onchange="loadSpaces()">
+                            <option value="">Tutte le sedi</option>
+                            <option value="Regesta">Regesta</option>
+                            <option value="Biblioteca">Biblioteca</option>
+                            <option value="Scuola">Scuola</option>
+                            <option value="Altro">Altro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label text-muted small mb-0 fw-semibold">Filtra per Capienza Minima</label>
+                        <input type="number" id="filter-capacity" class="form-control form-control-sm" value="0" min="0" oninput="loadSpaces()">
+                    </div>
+                    
+                    <div id="spaces-list" class="list-group"></div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div id="timeline-placeholder" class="card p-5 text-center text-muted shadow-sm bg-white border-riquadro-azzurro" style="border-style: dashed !important;">
+                    <h5>Nessuna aula selezionata</h5>
+                    <p class="small mb-0">Scegli una stanza dal pannello di sinistra per visualizzare la disponibilità oraria ed effettuare la prenotazione.</p>
+                </div>
+
+                <div id="timeline-card" class="card p-3 shadow-sm border-riquadro-azzurro" style="display: none;">
+                    <h5 id="timeline-title" class="card-title text-primary fw-bold mb-3">Disponibilità Aula</h5>
+                    <input type="hidden" id="book-space-id">
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">1. Seleziona Data di Verifica</label>
+                        <input type="date" id="book-date" class="form-control form-control-sm" onchange="updateTimelineData()">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">2. Linea Temporale Giornaliera (08:00 - 18:00)</label>
+                        <div id="daily-timeline-container" class="border rounded p-2 bg-white style-timeline" style="max-height: 220px; overflow-y: auto;">
+                            </div>
+                    </div>
+
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-secondary">Orario Inizio</label>
+                            <input type="time" id="book-time" class="form-control form-control-sm" value="10:00" step="1800">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-secondary">Durata Periodo</label>
+                            <select id="book-duration" class="form-select form-select-sm">
+                                <option value="1">1 Ora</option>
+                                <option value="2">2 Ore (Massimo)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">Invita altri Utenti (Separa con la virgola)</label>
+                        <input type="text" id="book-invites" class="form-control form-control-sm" placeholder="studente1, studente2">
+                        <div class="form-text text-muted small" style="font-size:10px;">Riceveranno una richiesta di approvazione al login.</div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <button onclick="closeTimelinePanel()" class="btn btn-sm btn-secondary px-3">Chiudi</button>
+                        <button onclick="submitBooking()" class="btn btn-sm btn-success px-3 fw-bold">Invia Prenotazione</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card p-3 shadow-sm mb-4">
+                    <h5 class="card-title fw-bold">📝 Le Tue Prenotazioni</h5>
+                    <div id="my-bookings-list" class="list-group mt-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="admin-panel" class="card border-danger p-3 shadow-sm mt-4 mb-5" style="display: none;">
+            <h5 class="card-title text-danger fw-bold">⚙️ Pannello di Controllo Amministratore</h5>
+            <div class="row g-4">
+                
+                <div class="col-md-5 border-end">
+                    <h6 id="admin-form-title" class="fw-bold text-dark">Aggiungi Nuovo Spazio</h6>
+                    <input type="hidden" id="admin-edit-space-id" value="">
+                    
+                    <div class="mb-2">
+                        <input type="text" id="new-space-name" class="form-control form-control-sm text-dark fw-semibold" placeholder="Nome Spazio (es. Aula Studio B)">
+                    </div>
+                    <div class="mb-2">
+                        <input type="number" id="new-space-capacity" class="form-control form-control-sm text-dark" placeholder="Capienza (1-40)" min="1" max="40">
+                    </div>
+                    <div class="mb-2">
+                        <input type="text" id="new-space-features" class="form-control form-control-sm text-dark" placeholder="Dotazione (es. Proiettore, Wi-Fi)">
+                    </div>
+                    <div class="mb-2">
+                        <select id="new-space-location" class="form-select form-select-sm text-dark">
+                            <option value="Regesta">Regesta</option>
+                            <option value="Biblioteca">Biblioteca</option>
+                            <option value="Scuola">Scuola</option>
+                            <option value="Altro">Altro</option>
+                        </select>
+                    </div>
+                    <div id="admin-action-buttons">
+                        <button onclick="createSpace()" class="btn btn-danger btn-sm mt-1">Crea Spazio</button>
+                    </div>
+                </div>
+
+                <div class="col-md-7">
+                    <h6 class="fw-bold text-dark">Gestione Stato / Manutenzione Spazi</h6>
+                    <div id="admin-spaces-list" class="list-group"></div>
+                </div>
+            </div>
+
+            <div class="row mt-4 pt-3 border-top">
+                <div class="col-12">
+                    <h6 class="text-danger fw-bold">📋 Registro Globale di tutte le Prenotazioni Attive</h6>
+                    <div id="admin-global-bookings-list" class="list-group mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="profile-section" class="container-fluid px-4" style="display: none;">
+        <div class="card p-4 shadow-sm mb-4 border-riquadro-azzurro">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="rounded-circle bg-secondary d-flex justify-content-center align-items-center" style="width:72px; height:72px; font-size:2rem; color:#fff;">👤</div>
+                <div>
+                    <h4 class="mb-1" id="profile-name">Profilo Utente</h4>
+                    <div class="text-muted small" id="profile-role">Ruolo</div>
+                </div>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="card p-3 bg-light h-100">
+                        <h6 class="fw-bold">Statistiche</h6>
+                        <p class="mb-1"><strong>Ore totali:</strong> <span id="profile-total-hours">0</span></p>
+                        <p class="mb-1"><strong>Aula più usata:</strong> <span id="profile-top-room">Nessuna</span></p>
+                        <p class="mb-1"><strong>Prenotazioni totali:</strong> <span id="profile-total-bookings">0</span></p>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="card p-3 bg-light h-100">
+                        <h6 class="fw-bold">Amici</h6>
+                        <div id="friends-list" class="mb-2 small text-dark"></div>
+                        <div class="input-group input-group-sm">
+                            <input type="text" id="friend-target" class="form-control" placeholder="Username da aggiungere">
+                            <button class="btn btn-primary" onclick="sendFriendRequest()">Invia richiesta</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="card p-3 shadow-sm mb-4">
+                    <h6 class="fw-bold mb-3">Prenotazioni</h6>
+                    <div id="profile-bookings-list" class="list-group"></div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card p-3 shadow-sm mb-4">
+                    <h6 class="fw-bold mb-3">Richieste di amicizia</h6>
+                    <div id="incoming-friend-requests" class="list-group"></div>
+                </div>
+                <div class="card p-3 shadow-sm mb-3">
+                    <h6 class="fw-bold mb-3">Modifica Nome Profilo</h6>
+                    <div class="mb-2">
+                        <input type="text" id="new-display-name" class="form-control form-control-sm" placeholder="Nuovo nome visualizzato">
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="submitDisplayNameChange()">Aggiorna nome</button>
+                </div>
+
+                <div class="card p-3 shadow-sm mb-3" id="chat-card">
+                    <h6 class="fw-bold mb-3">Chat con utenti</h6>
+                    <div class="d-flex" style="gap:12px;">
+                        <div style="width:40%; max-width:200px;">
+                            <div id="conversations-list" class="list-group small" style="max-height:280px; overflow:auto;"></div>
+                        </div>
+                        <div style="flex:1;">
+                            <div id="chat-with" class="mb-2 small text-muted">Seleziona una conversazione</div>
+                            <div id="chat-messages" style="height:200px; overflow:auto; background:#fff; border:1px solid #dee2e6; padding:8px; border-radius:6px;" class="mb-2"></div>
+                            <div class="input-group input-group-sm">
+                                <input type="text" id="chat-input" class="form-control" placeholder="Scrivi un messaggio...">
+                                <button class="btn btn-primary" onclick="sendChatMessage()">Invia</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card p-3 shadow-sm">
+                    <h6 class="fw-bold mb-3">Cambia password</h6>
+                    <div class="mb-2">
+                        <input type="password" id="current-password" class="form-control form-control-sm" placeholder="Password attuale">
+                    </div>
+                    <div class="mb-2">
+                        <input type="password" id="new-password-profile" class="form-control form-control-sm" placeholder="Nuova password">
+                    </div>
+                    <button class="btn btn-success btn-sm" onclick="submitPasswordChange()">Aggiorna password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-3">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registrazione Nuovo Account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Inserisci la tua email</label>
+                        <input type="email" id="reg-email" class="form-control" placeholder="esempio@scuola.com">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Crea una Password</label>
+                        <input type="password" id="reg-password" class="form-control" placeholder="Minimo 4 caratteri">
+                        <div class="form-text text-muted small">Nota: Se l'email contiene la parola 'admin', verrai registrato come amministratore.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="button" onclick="submitRegister()" class="btn btn-primary">Registrati</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-3">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modifica / Ripristina Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Indica il tuo account (Email)</label>
+                        <input type="email" id="reset-email" class="form-control" placeholder="esempio@scuola.com">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nuova Password</label>
+                        <input type="password" id="reset-password" class="form-control" placeholder="Inserisci la nuova password">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="button" onclick="submitResetPassword()" class="btn btn-primary">Aggiorna Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let currentUser = "";
+        let currentRole = "";
+        let selectedSpaceId = null;
+        let selectedSpaceName = "";
+        let pendingInvitations = [];
+        let currentInviteIndex = 0;
+        let notifications = [];
+        let selectedNotifications = new Set();
+
+        let registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
+        let resetPasswordModal = new bootstrap.Modal(document.getElementById('resetPasswordModal'));
+
+        // RE-DESIGN FUNZIONE DI DIALOG ALERT (Alto al centro, stile pulito con risposta OK)
+        function customAlert(message) {
+            const oldBox = document.getElementById('custom-alert-box');
+            if (oldBox) oldBox.remove();
+
+            const alertDiv = document.createElement('div');
+            alertDiv.id = 'custom-alert-box';
+            alertDiv.style.position = 'fixed';
+            alertDiv.style.top = '25px';
+            alertDiv.style.left = '50%';
+            alertDiv.style.transform = 'translateX(-50%)';
+            alertDiv.style.zIndex = '99999';
+            alertDiv.style.minWidth = '340px';
+            alertDiv.style.maxWidth = '500px';
+            alertDiv.className = 'card shadow-lg border-primary animate-fade';
+
+            alertDiv.innerHTML = `
+                <div class="card-body text-center p-3">
+                    <h6 class="text-primary fw-bold mb-2">📢 Messaggio di Sistema</h6>
+                    <p class="card-text text-dark small mb-3">${message}</p>
+                    <button class="btn btn-primary btn-sm px-4 fw-bold" onclick="document.getElementById('custom-alert-box').remove()">OK</button>
+                </div>
+            `;
+            document.body.appendChild(alertDiv);
+        }
+        // Override nativo dell'alert standard browser
+        window.alert = customAlert;
+
+        function openRegisterModal(event) {
+            event.preventDefault();
+            document.getElementById('reg-email').value = '';
+            document.getElementById('reg-password').value = '';
+            registerModal.show();
+        }
+
+        function openResetModal(event) {
+            event.preventDefault();
+            document.getElementById('reset-email').value = '';
+            document.getElementById('reset-password').value = '';
+            resetPasswordModal.show();
+        }
+
+        function submitRegister() {
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            if(!email || !password) return alert("Inserisci credenziali valide.");
+
+            fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ username: email, password: password })
+            })
+            .then(res => {
+                if(!res.ok) return res.json().then(err => { throw new Error(err.detail) });
+                return res.json();
+            })
+            .then(data => {
+                alert("Account creato con successo! Ora esegui l'accesso.");
+                registerModal.hide();
+                document.getElementById('username-input').value = email;
+            })
+            .catch(err => alert("Errore: " + err.message));
+        }
+
+        function submitResetPassword() {
+            const email = document.getElementById('reset-email').value;
+            const newPassword = document.getElementById('reset-password').value;
+            if(!email || !newPassword) return alert("Compila tutti i campi richiesti.");
+
+            fetch('/api/auth/reset-password', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ username: email, new_password: newPassword })
+            })
+            .then(res => {
+                if(!res.ok) return res.json().then(err => { throw new Error(err.detail) });
+                return res.json();
+            })
+            .then(data => {
+                alert(data.message);
+                resetPasswordModal.hide();
+            })
+            .catch(err => alert("Errore: " + err.message));
+        }
+
+        function login() {
+            const username = document.getElementById('username-input').value;
+            const password = document.getElementById('password-input').value;
+            if(!username || !password) return alert("Inserisci email e password per accedere.");
+            
+            fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username: username, password: password})
+            })
+            .then(res => {
+                if(!res.ok) return res.json().then(err => { throw new Error(err.detail) });
+                return res.json();
+            })
+            .then(user => {
+                currentUser = user.username;
+                currentRole = user.role;
+                localStorage.setItem('loggedUser', currentUser);
+                localStorage.setItem('loggedRole', currentRole);
+                localStorage.setItem('loggedDisplayName', user.display_name || currentUser);
+
+                showAppLayout(user.display_name || currentUser, currentRole);
+                loadSpaces();
+                loadMyBookings();
+                checkNotifications(currentUser);
+                checkInvitations(currentUser);
+            })
+            .catch(err => alert("Errore: " + err.message));
+        }
+
+        function logout() {
+            currentUser = "";
+            currentRole = "";
+            selectedSpaceId = null;
+            closeTimelinePanel();
+            document.getElementById('username-input').value = "";
+            document.getElementById('password-input').value = "";
+            document.getElementById('app-nav').style.display = 'none';
+            document.getElementById('main-section').style.display = 'none';
+            document.getElementById('profile-section').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('login-section').style.display = 'block';
+            localStorage.removeItem('loggedUser');
+            localStorage.removeItem('loggedRole');
+            localStorage.removeItem('loggedDisplayName');
+        }
+
+        function showAppLayout(displayName, role) {
+            document.getElementById('user-display').innerText = `Utente: ${displayName} (${role})`;
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('app-nav').style.display = 'block';
+            document.getElementById('main-section').style.display = 'block';
+            document.getElementById('profile-section').style.display = 'none';
+            if(role === 'admin') {
+                document.getElementById('admin-panel').style.display = 'block';
+                loadAdminSpaces();
+                loadGlobalBookings();
+            } else {
+                document.getElementById('admin-panel').style.display = 'none';
+            }
+        }
+
+        function initializeApp() {
+            const storedUser = localStorage.getItem('loggedUser');
+            const storedRole = localStorage.getItem('loggedRole');
+            const storedDisplayName = localStorage.getItem('loggedDisplayName');
+            let storedTheme = localStorage.getItem('theme') || 'theme-light';
+            if (!['theme-light','theme-retro','theme-neon','theme-natura','theme-cielo'].includes(storedTheme)) storedTheme = 'theme-light';
+            selectTheme(storedTheme, false);
+
+            if(storedUser && storedRole) {
+                currentUser = storedUser;
+                currentRole = storedRole;
+                showAppLayout(storedDisplayName || storedUser, storedRole);
+                loadSpaces();
+                loadMyBookings();
+                checkNotifications(currentUser);
+                checkInvitations(currentUser);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', initializeApp);
+
+        function goHomepage() {
+            if (!currentUser) return;
+            document.getElementById('profile-section').style.display = 'none';
+            document.getElementById('main-section').style.display = 'block';
+            loadSpaces();
+            loadMyBookings();
+            if(currentRole === 'admin') {
+                document.getElementById('admin-panel').style.display = 'block';
+                loadAdminSpaces();
+                loadGlobalBookings();
+            } else {
+                document.getElementById('admin-panel').style.display = 'none';
+            }
+        }
+
+        function toggleThemePanel() {
+            const panel = document.getElementById('theme-panel');
+            if (!panel) return;
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function selectTheme(theme, save = true) {
+            document.body.classList.remove('theme-light', 'theme-retro', 'theme-neon', 'theme-natura', 'theme-cielo');
+            document.body.classList.add(theme);
+            if (save) {
+                localStorage.setItem('theme', theme);
+            }
+        }
+
+        function openUserProfile() {
+            if (!currentUser) return;
+            document.getElementById('main-section').style.display = 'none';
+            document.getElementById('profile-section').style.display = 'block';
+            document.getElementById('admin-panel').style.display = 'none';
+            loadUserProfile();
+        }
+
+        function loadUserProfile() {
+            if (!currentUser) return;
+            fetch(`/api/auth/profile?user=${encodeURIComponent(currentUser)}`)
+            .then(res => {
+                if(!res.ok) return res.json().then(err => { throw new Error(err.detail); });
+                return res.json();
+            })
+            .then(data => {
+                const profile = data.user;
+                document.getElementById('profile-name').innerText = profile.display_name;
+                const displayInput = document.getElementById('new-display-name');
+                if (displayInput) displayInput.value = profile.display_name;
+                document.getElementById('profile-role').innerText = `Ruolo: ${profile.role}`;
+                document.getElementById('friends-list').innerHTML = profile.friends.length > 0 ? profile.friends.map(f => `<div class="badge bg-info text-dark me-1 mb-1">${f}</div>`).join('') : '<p class="small text-muted">Nessun amico ancora.</p>';
+
+                const incomingList = document.getElementById('incoming-friend-requests');
+                incomingList.innerHTML = '';
+                if (data.incoming_requests.length === 0) {
+                    incomingList.innerHTML = '<p class="small text-muted mb-0">Nessuna nuova richiesta.</p>';
+                } else {
+                    data.incoming_requests.forEach(req => {
+                        incomingList.innerHTML += `
+                            <div class="list-group-item d-flex justify-content-between align-items-center p-2 mb-2">
+                                <div class="small">Richiesta da <strong>${req.from_user}</strong></div>
+                                <div>
+                                    <button class="btn btn-sm btn-success me-1" onclick="respondFriendRequest('${req.from_user}', 'accepted')">Accetta</button>
+                                    <button class="btn btn-sm btn-danger" onclick="respondFriendRequest('${req.from_user}', 'declined')">Rifiuta</button>
+                                </div>
+                            </div>`;
+                    });
+                }
+
+                fetch(`/api/bookings?user=${encodeURIComponent(currentUser)}`)
+                .then(res => res.json())
+                .then(bookings => {
+                    const list = document.getElementById('profile-bookings-list');
+                    list.innerHTML = '';
+                    if (bookings.length === 0) {
+                        list.innerHTML = '<p class="small text-muted mb-0">Nessuna prenotazione attiva.</p>';
+                    } else {
+                        const usage = {};
+                        let totalHours = 0;
+                        bookings.forEach(b => {
+                            const duration = (new Date(b.end_time.replace(' ', 'T')) - new Date(b.start_time.replace(' ', 'T'))) / 3600000;
+                            totalHours += duration;
+                            usage[b.space_name] = (usage[b.space_name] || 0) + duration;
+                            list.innerHTML += `
+                                <div class="list-group-item p-2 mb-2">
+                                    <div class="small fw-semibold">${b.space_name}</div>
+                                    <div class="small text-muted">${b.start_time} - ${b.end_time.split(' ')[1]}</div>
+                                </div>`;
+                        });
+                        document.getElementById('profile-total-hours').innerText = totalHours;
+                        document.getElementById('profile-total-bookings').innerText = bookings.length;
+                        const topRoom = Object.keys(usage).sort((a,b) => usage[b] - usage[a])[0] || 'Nessuna';
+                        document.getElementById('profile-top-room').innerText = topRoom;
+                    }
+                });
+                // carica la lista conversazioni per l'utente
+                loadConversations();
+            })
+            .catch(err => alert('Errore caricamento profilo: ' + err.message));
+        }
+
+        function sendFriendRequest() {
+            const target = document.getElementById('friend-target').value.trim();
+            if (!target) return alert('Inserisci l username dell amico da aggiungere.');
+            if (target === currentUser) return alert('Non puoi aggiungere te stesso.');
+            fetch('/api/auth/friend-requests', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ from_user: currentUser, target_user: target })
+            })
+            .then(res => {
+                if(!res.ok) return res.json().then(err => { throw new Error(err.detail); });
+                return res.json();
+            })
+            .then(data => {
+                alert(data.message);
+                document.getElementById('friend-target').value = '';
+            })
+            .catch(err => alert('Errore: ' + err.message));
+        }
+
+        function respondFriendRequest(requester, status) {
+            fetch('/api/auth/friend-requests/respond', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ user: currentUser, requester: requester, status: status })
+            })
+            .then(res => {
+                if(!res.ok) return res.json().then(err => { throw new Error(err.detail); });
+                return res.json();
+            })
+            .then(data => {
+                alert(data.message);
+                loadUserProfile();
+            })
+            .catch(err => alert('Errore: ' + err.message));
+        }
+
+        function submitPasswordChange() {
+            const oldPass = document.getElementById('current-password').value;
+            const newPass = document.getElementById('new-password-profile').value;
+            if (!oldPass || !newPass) return alert('Compila entrambi i campi password.');
+            fetch('/api/auth/change-password', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ username: currentUser, old_password: oldPass, new_password: newPass })
+            })
+            .then(res => {
+                if(!res.ok) return res.json().then(err => { throw new Error(err.detail); });
+                return res.json();
+            })
+            .then(data => {
+                alert(data.message);
+                document.getElementById('current-password').value = '';
+                document.getElementById('new-password-profile').value = '';
+            })
+            .catch(err => alert('Errore: ' + err.message));
+        }
+
+        function submitDisplayNameChange() {
+            const newName = document.getElementById('new-display-name').value.trim();
+            if (!newName) return alert('Inserisci un nome valido.');
+            fetch('/api/auth/update-displayname', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ username: currentUser, display_name: newName })
+            })
+            .then(res => {
+                if(!res.ok) return res.json().then(err => { throw new Error(err.detail); });
+                return res.json();
+            })
+            .then(data => {
+                alert(data.message);
+                localStorage.setItem('loggedDisplayName', newName);
+                document.getElementById('user-display').innerText = `Utente: ${newName} (${currentRole})`;
+                document.getElementById('profile-name').innerText = newName;
+            })
+            .catch(err => alert('Errore: ' + err.message));
+        }
+
+        function checkNotifications(user) {
+            fetch(`/api/auth/notifications?user=${encodeURIComponent(user)}`)
+            .then(res => res.json())
+            .then(items => {
+                notifications = items || [];
+                renderNotificationBadge();
+                if (notifications.length > 0) {
+                    renderNotificationsList();
+                }
+            })
+            .catch(() => {
+                notifications = [];
+                renderNotificationBadge();
+            });
+        }
+
+        function renderNotificationBadge() {
+            const badge = document.getElementById('notification-badge');
+            if (!badge) return;
+            const unreadCount = notifications.filter(n => n.read !== true).length;
+            if (unreadCount > 0) {
+                badge.innerText = unreadCount;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function toggleNotificationsPanel() {
+            const panel = document.getElementById('notifications-panel');
+            if (!panel) return;
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+            if (panel.style.display === 'block') {
+                renderNotificationsList();
+            }
+        }
+
+        function renderNotificationsList() {
+            const listEl = document.getElementById('notifications-list');
+            if (!listEl) return;
+            listEl.innerHTML = "";
+            if (notifications.length === 0) {
+                listEl.innerHTML = '<p class="text-muted small mb-0">Nessuna notifica recente.</p>';
+                return;
+            }
+            selectedNotifications.clear();
+            notifications.forEach(n => {
+                const item = document.createElement('div');
+                item.className = 'notification-item p-2 mb-2 d-flex align-items-start gap-2';
+                item.innerHTML = `
+                    <div class="form-check mt-1">
+                        <input class="form-check-input" type="checkbox" id="notif-${n.id}" data-id="${n.id}">
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="small text-dark${n.read ? '' : ' fw-semibold'}">${n.message}</div>
+                        <div class="small text-muted">${n.read ? 'Letta' : 'Nuova'}</div>
+                    </div>
+                `;
+                const checkbox = item.querySelector('input[type=checkbox]');
+                checkbox.addEventListener('change', event => {
+                    const notificationId = parseInt(event.target.dataset.id, 10);
+                    if (event.target.checked) {
+                        selectedNotifications.add(notificationId);
+                    } else {
+                        selectedNotifications.delete(notificationId);
+                    }
+                });
+                listEl.appendChild(item);
+            });
+        }
+
+        function toggleSelectAllNotifications() {
+            const listEl = document.getElementById('notifications-list');
+            if (!listEl) return;
+            const checkboxes = listEl.querySelectorAll('input[type=checkbox]');
+            const allSelected = Array.from(checkboxes).every(cb => cb.checked);
+            checkboxes.forEach(cb => {
+                cb.checked = !allSelected;
+                const notificationId = parseInt(cb.dataset.id, 10);
+                if (cb.checked) {
+                    selectedNotifications.add(notificationId);
+                } else {
+                    selectedNotifications.delete(notificationId);
+                }
+            });
+        }
+
+        function markNotificationsRead() {
+            if (!currentUser || notifications.length === 0) return;
+            fetch(`/api/auth/notifications/read?user=${encodeURIComponent(currentUser)}`, {
+                method: 'PUT'
+            })
+            .then(res => res.json())
+            .then(() => {
+                notifications = notifications.map(n => ({ ...n, read: true }));
+                renderNotificationBadge();
+                renderNotificationsList();
+            })
+            .catch(() => {
+                alert("Errore durante l'aggiornamento delle notifiche.");
+            });
+        }
+
+        function deleteSelectedNotifications() {
+            if (!currentUser || selectedNotifications.size === 0) {
+                return alert('Seleziona una o più notifiche da eliminare.');
+            }
+            const deletePromises = Array.from(selectedNotifications).map(id => {
+                return fetch(`/api/auth/notifications/${id}?user=${encodeURIComponent(currentUser)}`, {
+                    method: 'DELETE'
+                }).then(res => {
+                    if (!res.ok) return res.json().then(err => { throw new Error(err.detail); });
+                });
+            });
+            Promise.all(deletePromises)
+            .then(() => {
+                notifications = notifications.filter(n => !selectedNotifications.has(n.id));
+                selectedNotifications.clear();
+                renderNotificationBadge();
+                renderNotificationsList();
+            })
+            .catch(err => alert("Errore: " + err.message));
+        }
+
+        function clearNotifications() {
+            if (!currentUser || notifications.length === 0) {
+                return;
+            }
+            fetch(`/api/auth/notifications?user=${encodeURIComponent(currentUser)}`, {
+                method: 'DELETE'
+            })
+            .then(res => res.json())
+            .then(() => {
+                notifications = [];
+                selectedNotifications.clear();
+                renderNotificationBadge();
+                renderNotificationsList();
+                const panel = document.getElementById('notifications-panel');
+                if (panel) panel.style.display = 'none';
+            })
+            .catch(() => {
+                alert("Errore durante la cancellazione delle notifiche.");
+            });
+        }
+
+        // VERIFICA INVITI RICEVUTI ALL'ACCESSO
+        function checkInvitations(user) {
+            fetch(`/api/bookings/invitations?user=${user}`)
+            .then(res => res.json())
+            .then(invitations => {
+                pendingInvitations = invitations;
+                currentInviteIndex = 0;
+                presentNextInvitation();
+            });
+        }
+
+        function presentNextInvitation() {
+            const oldBox = document.getElementById('invitation-prompt-box');
+            if (oldBox) oldBox.remove();
+
+            if (currentInviteIndex >= pendingInvitations.length) {
+                loadMyBookings();
+                if(currentRole === 'admin') loadGlobalBookings();
+                return;
+            }
+
+            const inv = pendingInvitations[currentInviteIndex];
+            const modalDiv = document.createElement('div');
+            modalDiv.id = 'invitation-prompt-box';
+            modalDiv.style.position = 'fixed';
+            modalDiv.style.top = '30%';
+            modalDiv.style.left = '50%';
+            modalDiv.style.transform = 'translate(-50%, -30%)';
+            modalDiv.style.zIndex = '99999';
+            modalDiv.style.width = '420px';
+            modalDiv.className = 'card shadow-lg border-warning animate-fade';
+
+            modalDiv.innerHTML = `
+                <div class="card-body text-center p-4">
+                    <h5 class="card-title text-warning fw-bold mb-3">📬 Nuovo Invito in Stanza!</h5>
+                    <p class="card-text text-dark small">
+                        L'utente <strong>${inv.host}</strong> ti ha invitato a partecipare alla prenotazione della stanza: 
+                        <br><span class="badge bg-secondary mt-1">${inv.space_name}</span>
+                        <br><span class="text-muted d-block mt-2">Periodo: ${inv.start_time} fino alle ${inv.end_time.split(" ")[1]}</span>
+                    </p>
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <button class="btn btn-success btn-sm px-4 fw-bold" onclick="submitInvitationResponse('accepted')">Accetta</button>
+                        <button class="btn btn-danger btn-sm px-4 fw-bold" onclick="submitInvitationResponse('declined')">Declina</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modalDiv);
+        }
+
+        function submitInvitationResponse(status) {
+            const inv = pendingInvitations[currentInviteIndex];
+            fetch(`/api/bookings/invitations/${inv.booking_id}/respond?user=${currentUser}&status=${status}`, {
+                method: 'POST'
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                document.getElementById('invitation-prompt-box').remove();
+                currentInviteIndex++;
+                presentNextInvitation();
+            });
+        }
+
+        // CARICAMENTO STANZE CON FILTRO NOME E CAPIENZA
+        function loadSpaces() {
+            const capacity = document.getElementById('filter-capacity').value || 0;
+            const nameSearch = document.getElementById('filter-name').value || "";
+            
+            const selectedLocation = document.getElementById('filter-location').value || "";
+            fetch(`/api/spaces?capacity=${capacity}&name=${encodeURIComponent(nameSearch)}&location=${encodeURIComponent(selectedLocation)}`)
+            .then(res => res.json())
+            .then(spaces => {
+                const list = document.getElementById('spaces-list');
+                list.innerHTML = "";
+                if(spaces.length === 0) {
+                    list.innerHTML = "<p class='text-muted small p-2'>Nessuno spazio attivo corrispondente.</p>";
+                    return;
+                }
+                spaces.forEach(s => {
+                    list.innerHTML += `
+                        <div class="list-group-item d-flex justify-content-between align-items-start p-3 mb-2 border rounded shadow-sm bg-white">
+                            <div>
+                                <h6 class="mb-1 fw-bold text-white">${s.name} <span class="badge bg-secondary">Posti: ${s.capacity}</span></h6>
+                                <small class="text-muted d-block">Sede: ${s.location || 'Non specificata'}</small>
+                                <small class="text-muted d-block">Dotazione: ${s.equipment || 'Nessuna'}</small>
+                            </div>
+                            <button onclick="openBookingTimeline(${s.id}, '${s.name}')" class="btn btn-success btn-sm px-3 fw-semibold">Seleziona</button>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // APERTURA INTERFACCIA RIQUADRO AZZURRO TIMELINE
+        function openBookingTimeline(spaceId, spaceName) {
+            selectedSpaceId = spaceId;
+            selectedSpaceName = spaceName;
+            
+            document.getElementById('book-space-id').value = spaceId;
+            document.getElementById('timeline-title').innerText = `📅 Gestione Aula: ${spaceName}`;
+            
+            if(!document.getElementById('book-date').value) {
+                document.getElementById('book-date').value = new Date().toISOString().split('T')[0];
+            }
+            
+            document.getElementById('timeline-placeholder').style.display = 'none';
+            document.getElementById('timeline-card').style.display = 'block';
+            
+            updateTimelineData();
+        }
+
+        function closeTimelinePanel() {
+            document.getElementById('timeline-card').style.display = 'none';
+            document.getElementById('timeline-placeholder').style.display = 'block';
+            selectedSpaceId = null;
+        }
+
+        // CALCOLO E GENERAZIONE SLOT LINEA TEMPORALE DALLE 8:00 ALLE 18:00
+        function updateTimelineData() {
+            if (!selectedSpaceId) return;
+            const targetDate = document.getElementById('book-date').value;
+            if (!targetDate) return;
+
+            fetch('/api/bookings')
+            .then(res => res.json())
+            .then(bookings => {
+                const container = document.getElementById('daily-timeline-container');
+                container.innerHTML = "";
+                
+                // Iterazione per fasce orarie da 1 ora dalle 08:00 alle 18:00
+                for (let h = 8; h < 18; h++) {
+                    const strHourStart = String(h).padStart(2, '0') + ":00";
+                    const strHourEnd = String(h + 1).padStart(2, '0') + ":00";
+                    
+                    const checkStart = new Date(`${targetDate}T${strHourStart}`);
+                    const checkEnd = new Date(`${targetDate}T${strHourEnd}`);
+                    
+                    let busy = false;
+                    let busyUser = "";
+                    
+                    bookings.forEach(b => {
+                        if (b.space_id === selectedSpaceId) {
+                            const bStart = new Date(b.start_time.replace(" ", "T"));
+                            const bEnd = new Date(b.end_time.replace(" ", "T"));
+                            
+                            if (checkStart < bEnd && checkEnd > bStart) {
+                                busy = true;
+                                busyUser = b.user;
+                            }
+                        }
+                    });
+                    
+                    const bgClass = busy ? 'bg-danger text-white' : 'bg-success text-white';
+                    const textLabel = busy ? `Occupato da: ${busyUser}` : 'Libero / Disponibile';
+                    
+                    container.innerHTML += `
+                        <div class="timeline-slot border ${busy ? 'bg-light' : ''}">
+                            <span class="fw-bold">${strHourStart} - ${strHourEnd}</span>
+                            <span class="badge ${bgClass}">${textLabel}</span>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        function submitBooking() {
+            const spaceId = document.getElementById('book-space-id').value;
+            const date = document.getElementById('book-date').value;
+            const time = document.getElementById('book-time').value;
+            const duration = document.getElementById('book-duration').value;
+            const invitesText = document.getElementById('book-invites').value;
+            
+            if(!date || !time) return alert("Inserisci una data e un orario validi.");
+            
+            const formattedStartTime = `${date} ${time}`;
+            
+            // Generazione array invitati pulito da spazi vuoti o duplicati
+            const invitedUsers = invitesText.split(',')
+                                            .map(u => u.trim())
+                                            .filter(u => u.length > 0 && u !== currentUser);
+            
+            fetch('/api/bookings', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ 
+                    space_id: parseInt(spaceId), 
+                    user: currentUser, 
+                    start_time: formattedStartTime,
+                    duration_hours: parseInt(duration),
+                    invited_users: invitedUsers
+                })
+            })
+            .then(res => {
+                if(!res.ok) return res.json().then(err => { throw new Error(err.detail) });
+                return res.json();
+            })
+            .then(data => {
+                alert(data.message || "Prenotazione completata con successo!");
+                updateTimelineData();
+                loadMyBookings();
+                if(currentRole === 'admin') loadGlobalBookings();
+                document.getElementById('book-invites').value = "";
+            })
+            .catch(err => alert("Errore: " + err.message));
+        }
+
+        function loadMyBookings() {
+            fetch(`/api/bookings?user=${currentUser}`)
+            .then(res => res.json())
+            .then(bookings => {
+                const list = document.getElementById('my-bookings-list');
+                list.innerHTML = "";
+                if(bookings.length === 0) {
+                    list.innerHTML = "<p class='text-muted small p-2'>Nessuna prenotazione attiva a tuo nome.</p>";
+                    return;
+                }
+                bookings.forEach(b => {
+                    const isOwner = b.user === currentUser;
+                    const hostLabel = isOwner ? "<span class='badge bg-info'>Tua</span>" : `<span class='badge bg-warning text-dark'>Ospite di ${b.user}</span>`;
+                    
+                    list.innerHTML += `
+                        <div class="list-group-item d-flex justify-content-between align-items-center p-2 mb-2 border rounded shadow-sm bg-white">
+                            <div>
+                                <div class="small fw-bold text-dark">${b.space_name} ${hostLabel}</div>
+                                <div class="small text-muted" style="font-size: 11px;">Orario: ${b.start_time} - ${b.end_time.split(" ")[1]}</div>
+                            </div>
+                            ${isOwner ? `<button onclick="cancelBooking(${b.id})" class="btn btn-danger btn-sm px-2 py-0 fw-semibold" style="font-size:11px;">Disdici</button>` : ''}
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // AMMINISTRAZIONE: LISTA STANZE CON AZIONE MODIFICA AGGIUNTIVA
+        function loadAdminSpaces() {
+            fetch('/api/spaces/all-admin')
+            .then(res => res.json())
+            .then(spaces => {
+                const list = document.getElementById('admin-spaces-list');
+                list.innerHTML = "";
+                spaces.forEach(s => {
+                    const isActive = s.active !== false;
+                    const dotClass = isActive ? 'dot-active' : 'dot-inactive';
+                    const statusText = isActive ? 'Attivo' : 'In Manutenzione';
+                    
+                    list.innerHTML += `
+                        <div class="list-group-item d-flex justify-content-between align-items-center p-2 mb-1 border-0 border-bottom">
+                            <div>
+                                <span class="fw-bold text-white">${s.name}</span> 
+                                (<span class="status-dot ${dotClass}"></span> <small class="text-muted fw-semibold">${statusText}</small>)
+                                <br><small class="text-muted">Capienza: ${s.capacity} | Dotazioni: ${s.equipment || 'Nessuna'}</small>
+                            </div>
+                            <div>
+                                <button onclick="populateEditSpaceForm(${s.id}, '${s.name}', ${s.capacity}, '${s.equipment}', '${s.location || 'Regesta'}')" class="btn btn-info text-white btn-sm py-0 px-2 me-1" style="font-size:11px;">Modifica</button>
+                                <button onclick="toggleSpace(${s.id})" class="btn btn-warning btn-sm py-0 px-2 me-1" style="font-size:11px;">Inverti Stato</button>
+                                <button onclick="deleteSpace(${s.id})" class="btn btn-danger btn-sm py-0 px-2" style="font-size:11px;">Elimina</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // AMMINISTRAZIONE: ATTIVAZIONE MODALITÀ MODIFICA DATI AULA
+        function populateEditSpaceForm(id, name, capacity, equipment, location = 'Regesta') {
+            document.getElementById('admin-form-title').innerText = "🔧 Modifica Caratteristiche Spazio";
+            document.getElementById('admin-edit-space-id').value = id;
+            document.getElementById('new-space-name').value = name;
+            document.getElementById('new-space-capacity').value = capacity;
+            document.getElementById('new-space-features').value = equipment;
+            document.getElementById('new-space-location').value = location || 'Regesta';
+            
+            document.getElementById('admin-action-buttons').innerHTML = `
+                <button onclick="submitUpdateSpace()" class="btn btn-success btn-sm mt-1 fw-bold">Salva Modifiche</button>
+                <button onclick="resetAdminForm()" class="btn btn-secondary btn-sm mt-1 ms-1">Annulla</button>
+            `;
+        }
+
+        function resetAdminForm() {
+            document.getElementById('admin-form-title').innerText = "Aggiungi Nuovo Spazio";
+            document.getElementById('admin-edit-space-id').value = "";
+            document.getElementById('new-space-name').value = "";
+            document.getElementById('new-space-capacity').value = "";
+            document.getElementById('new-space-features').value = "";
+            document.getElementById('new-space-location').value = "Regesta";
+            
+            document.getElementById('admin-action-buttons').innerHTML = `
+                <button onclick="createSpace()" class="btn btn-danger btn-sm mt-1">Crea Spazio</button>
+            `;
+        }
+
+        function submitUpdateSpace() {
+            const id = document.getElementById('admin-edit-space-id').value;
+            const name = document.getElementById('new-space-name').value;
+            const cap = document.getElementById('new-space-capacity').value;
+            const feat = document.getElementById('new-space-features').value;
+            const location = document.getElementById('new-space-location').value;
+            
+            if(!name || !cap || !location) return alert("Nome, capienza e sede sono campi obbligatori.");
+            
+            const capacityInt = parseInt(cap);
+            fetch(`/api/spaces/${id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ name: name, capacity: capacityInt, equipment: feat, location: location })
+            })
+            .then(res => {
+                if(!res.ok) return res.json().then(err => { throw new Error(err.detail) });
+                return res.json();
+            })
+            .then(() => {
+                alert("Spazio aggiornato e modificato con successo nel sistema!");
+                resetAdminForm();
+                loadAdminSpaces();
+                loadSpaces();
+                if(selectedSpaceId && parseInt(id) === selectedSpaceId) {
+                    openBookingTimeline(selectedSpaceId, name);
+                }
+            })
+            .catch(err => alert("Errore: " + err.message));
+        }
+
+        function createSpace() {
+            const name = document.getElementById('new-space-name').value;
+            const cap = document.getElementById('new-space-capacity').value;
+            const feat = document.getElementById('new-space-features').value;
+            const location = document.getElementById('new-space-location').value;
+            
+            if(!name || !cap || !location) return alert("Nome, capienza e sede sono obbligatori");
+            
+            const capacityInt = parseInt(cap);
+            if(capacityInt < 1 || capacityInt > 40) {
+                return alert("Errore: la capienza dell'aula deve essere compresa tra 1 e 40.");
+            }
+            
+            fetch('/api/spaces', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ name: name, capacity: capacityInt, equipment: feat, location: location })
+            })
+            .then(res => {
+                if(!res.ok) return res.json().then(err => { throw new Error(err.detail) });
+                return res.json();
+            })
+            .then(() => {
+                alert("Nuovo spazio inserito correttamente!");
+                document.getElementById('new-space-name').value = '';
+                document.getElementById('new-space-capacity').value = '';
+                document.getElementById('new-space-features').value = '';
+                loadAdminSpaces();
+                loadSpaces();
+            })
+            .catch(err => alert("Errore: " + err.message));
+        }
+
+        function toggleSpace(id) {
+            fetch(`/api/spaces/${id}/toggle`, { method: 'PATCH' })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                loadAdminSpaces();
+                loadSpaces();
+                loadMyBookings();
+                if(currentRole === 'admin') loadGlobalBookings();
+                if(selectedSpaceId === id) closeTimelinePanel();
+            });
+        }
+
+        function deleteSpace(id) {
+            if(!confirm("Sei sicuro di voler eliminare DEFINITIVAMENTE questa stanza? Questa azione annullerà tutte le sue prenotazioni future.")) return;
+            fetch(`/api/spaces/${id}`, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                loadAdminSpaces();
+                loadSpaces();
+                loadMyBookings();
+                if(currentRole === 'admin') loadGlobalBookings();
+                if(selectedSpaceId === id) closeTimelinePanel();
+            });
+        }
+
+        function loadGlobalBookings() {
+            fetch('/api/bookings')
+            .then(res => res.json())
+            .then(bookings => {
+                const list = document.getElementById('admin-global-bookings-list');
+                list.innerHTML = "";
+                if(bookings.length === 0) {
+                    list.innerHTML = "<p class='text-muted small p-2'>Nessuna aula è attualmente prenotata nel sistema.</p>";
+                    return;
+                }
+                bookings.forEach(b => {
+                    list.innerHTML += `
+                        <div class="list-group-item d-flex justify-content-between align-items-center p-2 mb-1 border-0 border-bottom bg-light">
+                            <div>
+                                <span class="fw-bold text-dark">${b.space_name}</span> 
+                                <span class="badge bg-primary ms-2">Utente: ${b.user}</span>
+                                <div class="small text-muted mt-1">Periodo d'uso: <strong>${b.start_time}</strong> fino a <strong>${b.end_time}</strong></div>
+                            </div>
+                            <span class="text-muted small">ID Prenotazione: #${b.id}</span>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        function cancelBooking(bookingId) {
+            if(!confirm("Sei sicuro di voler cancellare questa prenotazione?")) return;
+            fetch(`/api/bookings/${bookingId}?user=${currentUser}`, { method: 'DELETE' })
+            .then(res => {
+                if(!res.ok) return res.json().then(err => { throw new Error(err.detail) });
+                return res.json();
+            })
+            .then(data => {
+                alert(data.message);
+                loadMyBookings();
+                if(selectedSpaceId) updateTimelineData();
+                if(currentRole === 'admin') loadGlobalBookings();
+            })
+            .catch(err => alert("Errore: " + err.message));
+        }
+
+        // Close panels when clicking outside (theme, notifications, mascot)
+        document.addEventListener('click', function(e) {
+            try {
+                const themePanel = document.getElementById('theme-panel');
+                if (themePanel && themePanel.style.display === 'block' && !e.target.closest('#nav-theme')) {
+                    themePanel.style.display = 'none';
+                }
+                const notifPanel = document.getElementById('notifications-panel');
+                if (notifPanel && notifPanel.style.display === 'block' && !e.target.closest('#nav-notifications')) {
+                    notifPanel.style.display = 'none';
+                }
+                const mascotPanel = document.getElementById('mascot-panel');
+                if (mascotPanel && mascotPanel.style.display === 'block' && !e.target.closest('#nav-mascot')) {
+                    mascotPanel.style.display = 'none';
+                }
+            } catch (err) { /* ignore */ }
+        });
+
+        // Mascot functionality
+        const mascotMessages = [
+            "Ciao! Sono Pinguino, ricorda di fare una pausa ogni tanto 🐧",
+            "Battuta: Perché il pinguino non usa il computer? Perché preferisce il 'flap'! 😄",
+            "Consiglio: Bevi acqua e fai stretching per 2 minuti ora.",
+            "Promemoria movimento: Alzati e cammina per 3 minuti — il tuo corpo ti ringrazierà!",
+            "Suggerimento: Respira profondamente 5 volte ora per rilassare la mente.",
+            "Curiosità: I pinguini possono ricordare i volti degli amici — anche io ricordo te!"
+        ];
+        let mascotIndex = 0;
+        let mascotTimeoutId = null;
+
+        function toggleMascotPanel() {
+            const panel = document.getElementById('mascot-panel');
+            if (!panel) return;
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+            if (panel.style.display === 'block') renderMascotMessage();
+        }
+
+        function renderMascotMessage() {
+            const el = document.getElementById('mascot-message');
+            if (!el) return;
+            el.innerText = mascotMessages[mascotIndex % mascotMessages.length];
+        }
+
+        function mascotNext() {
+            mascotIndex = (mascotIndex + 1) % mascotMessages.length;
+            renderMascotMessage();
+        }
+
+        function mascotRemindLater(minutes) {
+            if (mascotTimeoutId) clearTimeout(mascotTimeoutId);
+            const ms = (minutes || 30) * 60 * 1000;
+            mascotTimeoutId = setTimeout(() => {
+                const panel = document.getElementById('mascot-panel');
+                if (panel) {
+                    panel.style.display = 'block';
+                    renderMascotMessage();
+                } else {
+                    alert('Pinguino ti ricorda: è ora di muoverti!');
+                }
+            }, ms);
+            alert(`Ok! Ti ricorderò tra ${minutes} minuti.`);
+            const panel = document.getElementById('mascot-panel');
+            if (panel) panel.style.display = 'none';
+        }
+
+        // --- Chat functions ---
+        let currentChatWith = null;
+
+        function loadConversations() {
+            if (!currentUser) return;
+            fetch(`/api/auth/conversations?user=${encodeURIComponent(currentUser)}`)
+            .then(res => res.json())
+            .then(list => {
+                const el = document.getElementById('conversations-list');
+                el.innerHTML = '';
+                if (!list || list.length === 0) {
+                    el.innerHTML = '<div class="small text-muted p-2">Nessuna conversazione</div>';
+                    return;
+                }
+                list.forEach(c => {
+                    el.innerHTML += `<button class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" onclick="openConversation('${c.user}')">`+
+                        `<div><strong>${c.user}</strong><div class="small text-muted">${c.last || ''}</div></div>`+
+                        `${c.unread ? `<span class='badge bg-danger rounded-pill'>${c.unread}</span>` : ''}`+
+                        `</button>`;
+                });
+            });
+        }
+
+        function openConversation(withUser) {
+            currentChatWith = withUser;
+            document.getElementById('chat-with').innerText = `Chat con ${withUser}`;
+            document.getElementById('chat-messages').innerHTML = '<div class="small text-muted">Caricamento...</div>';
+            loadMessages(withUser);
+            // mark read after opening
+            fetch('/api/auth/messages/read', {
+                method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ user: currentUser, with_user: withUser })
+            }).then(() => loadConversations()).catch(()=>{});
+        }
+
+        function loadMessages(withUser) {
+            fetch(`/api/auth/messages?user=${encodeURIComponent(currentUser)}&with_user=${encodeURIComponent(withUser)}`)
+            .then(res => res.json())
+            .then(msgs => {
+                const box = document.getElementById('chat-messages');
+                box.innerHTML = '';
+                if (!msgs || msgs.length === 0) {
+                    box.innerHTML = '<div class="small text-muted">Nessun messaggio in questa conversazione.</div>';
+                    return;
+                }
+                msgs.forEach(m => {
+                    const cls = m.from === currentUser ? 'text-end' : 'text-start';
+                    const bg = m.from === currentUser ? 'bg-primary text-white' : 'bg-light text-dark';
+                    const time = new Date(m.timestamp).toLocaleString();
+                    const node = document.createElement('div');
+                    node.className = `mb-2 p-2 rounded ${bg}`;
+                    node.style.clear = 'both';
+                    node.innerHTML = `<div class='small ${cls}'>${m.content}</div><div class='small text-muted ${cls}' style='font-size:0.7rem;'>${time}</div>`;
+                    box.appendChild(node);
+                });
+                box.scrollTop = box.scrollHeight;
+            });
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+            if (!currentChatWith) return alert('Seleziona prima una conversazione.');
+            fetch('/api/auth/send-message', {
+                method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ from: currentUser, to: currentChatWith, content: text })
+            })
+            .then(res => res.json())
+            .then(() => {
+                input.value = '';
+                loadMessages(currentChatWith);
+                loadConversations();
+            })
+            .catch(err => alert('Errore invio messaggio: ' + err.message));
+        }
+
+        // optional: refresh conversations/messages when profile is open
+        setInterval(() => {
+            if (document.getElementById('profile-section') && document.getElementById('profile-section').style.display === 'block') {
+                loadConversations();
+                if (currentChatWith) loadMessages(currentChatWith);
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

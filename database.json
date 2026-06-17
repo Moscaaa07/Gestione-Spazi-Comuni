@@ -1,0 +1,197 @@
+{
+    "users": [
+        {
+            "username": "admin",
+            "role": "admin",
+            "display_name": "Admin",
+            "password": "nimdA",
+            "friends": [
+                "studente2"
+            ]
+        },
+        {
+            "username": "studente1",
+            "role": "user",
+            "display_name": "Studente1",
+            "password": "1234"
+        },
+        {
+            "username": "studente2",
+            "role": "user",
+            "display_name": "Studente2",
+            "password": "1234",
+            "friends": [
+                "admin"
+            ]
+        },
+        {
+            "username": "user1",
+            "role": "user",
+            "display_name": "User1",
+            "password": "1resu"
+        },
+        {
+            "username": "user2",
+            "role": "user",
+            "display_name": "User2",
+            "password": "2resu"
+        },
+        {
+            "username": "user3",
+            "role": "user",
+            "display_name": "User3",
+            "password": "3resu"
+        },
+        {
+            "username": "user4",
+            "role": "user",
+            "display_name": "User4",
+            "password": "4resu"
+        },
+        {
+            "username": "user5",
+            "role": "user",
+            "display_name": "User5",
+            "password": "5resu"
+        },
+        {
+            "username": "user6",
+            "role": "user",
+            "display_name": "User6",
+            "password": "6resu"
+        },
+        {
+            "username": "user7",
+            "role": "user",
+            "display_name": "User7",
+            "password": "7resu"
+        },
+        {
+            "username": "user8",
+            "role": "user",
+            "display_name": "User8",
+            "password": "8resu"
+        },
+        {
+            "username": "user9",
+            "role": "user",
+            "display_name": "User9",
+            "password": "9resu"
+        },
+        {
+            "username": "user10",
+            "role": "user",
+            "display_name": "User10",
+            "password": "01resu"
+        }
+    ],
+    "spaces": [
+        {
+            "id": 1,
+            "name": "Aula1",
+            "capacity": 2,
+            "equipment": "",
+            "active": true,
+            "location": "Regesta"
+        },
+        {
+            "id": 2,
+            "name": "Aula2",
+            "capacity": 4,
+            "equipment": "",
+            "active": true,
+            "location": "Regesta"
+        },
+        {
+            "id": 3,
+            "name": "Aula3",
+            "capacity": 6,
+            "equipment": "",
+            "active": false,
+            "location": "Scuola"
+        },
+        {
+            "id": 4,
+            "name": "Aula4",
+            "capacity": 8,
+            "equipment": "",
+            "active": true,
+            "location": "Biblioteca"
+        },
+        {
+            "id": 5,
+            "name": "Aula5",
+            "capacity": 10,
+            "equipment": "",
+            "active": false,
+            "location": "Scuola"
+        },
+        {
+            "id": 6,
+            "name": "Aula6",
+            "capacity": 12,
+            "equipment": "",
+            "active": true,
+            "location": "Biblioteca"
+        },
+        {
+            "id": 7,
+            "name": "Aula7",
+            "capacity": 14,
+            "equipment": "",
+            "active": true,
+            "location": "Regesta"
+        },
+        {
+            "id": 8,
+            "name": "Aula8",
+            "capacity": 16,
+            "equipment": "",
+            "active": true,
+            "location": "Scuola"
+        },
+        {
+            "id": 9,
+            "name": "Aula9",
+            "capacity": 18,
+            "equipment": "",
+            "active": false,
+            "location": "Biblioteca"
+        },
+        {
+            "id": 10,
+            "name": "Aula10",
+            "capacity": 20,
+            "equipment": "",
+            "active": true,
+            "location": "Regesta"
+        }
+    ],
+    "bookings": [],
+    "notifications": [],
+    "friend_requests": [
+        {
+            "from_user": "studente2",
+            "target_user": "admin",
+            "status": "accepted"
+        }
+    ],
+    "messages": [
+        {
+            "id": 1,
+            "from": "admin",
+            "to": "studente2",
+            "content": "ciao",
+            "timestamp": "2026-06-16T14:36:57.865428",
+            "read": true
+        },
+        {
+            "id": 2,
+            "from": "admin",
+            "to": "studente2",
+            "content": "ciao a te",
+            "timestamp": "2026-06-17T08:02:15.653828",
+            "read": true
+        }
+    ]
+}
