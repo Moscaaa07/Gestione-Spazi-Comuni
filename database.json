@@ -25,64 +25,124 @@
             ]
         },
         {
-            "username": "user1",
+            "username": "luca.rossi",
             "role": "user",
-            "display_name": "User1",
-            "password": "1resu"
+            "display_name": "Luca Rossi",
+            "password": "issor.acul"
         },
         {
-            "username": "user2",
+            "username": "maria.bianchi",
             "role": "user",
-            "display_name": "User2",
-            "password": "2resu"
+            "display_name": "Maria Bianchi",
+            "password": "ihcnaib.airam"
         },
         {
-            "username": "user3",
+            "username": "giulia.ferrari",
             "role": "user",
-            "display_name": "User3",
-            "password": "3resu"
+            "display_name": "Giulia Ferrari",
+            "password": "irarref.ailuig"
         },
         {
-            "username": "user4",
+            "username": "marco.ricci",
             "role": "user",
-            "display_name": "User4",
-            "password": "4resu"
+            "display_name": "Marco Ricci",
+            "password": "iccir.ocram"
         },
         {
-            "username": "user5",
+            "username": "francesco.gallo",
             "role": "user",
-            "display_name": "User5",
-            "password": "5resu"
+            "display_name": "Francesco Gallo",
+            "password": "ollag.ocsecnarcf"
         },
         {
-            "username": "user6",
+            "username": "anna.moretti",
             "role": "user",
-            "display_name": "User6",
-            "password": "6resu"
+            "display_name": "Anna Moretti",
+            "password": "itterom.anna"
         },
         {
-            "username": "user7",
+            "username": "paolo.conti",
             "role": "user",
-            "display_name": "User7",
-            "password": "7resu"
+            "display_name": "Paolo Conti",
+            "password": "itnoc.olaop"
         },
         {
-            "username": "user8",
+            "username": "elisa.giordano",
             "role": "user",
-            "display_name": "User8",
-            "password": "8resu"
+            "display_name": "Elisa Giordano",
+            "password": "onadroig.asile"
         },
         {
-            "username": "user9",
+            "username": "matteo.esposito",
             "role": "user",
-            "display_name": "User9",
-            "password": "9resu"
+            "display_name": "Matteo Esposito",
+            "password": "otisospe.oettam"
         },
         {
-            "username": "user10",
+            "username": "sara.mancini",
             "role": "user",
-            "display_name": "User10",
-            "password": "01resu"
+            "display_name": "Sara Mancini",
+            "password": "inincnam.aras"
+        },
+        {
+            "username": "andrea.bruni",
+            "role": "user",
+            "display_name": "Andrea Bruni",
+            "password": "inurb.aerdna"
+        },
+        {
+            "username": "laura.romano",
+            "role": "user",
+            "display_name": "Laura Romano",
+            "password": "onamor.arual"
+        },
+        {
+            "username": "stefano.giusti",
+            "role": "user",
+            "display_name": "Stefano Giusti",
+            "password": "itsuig.onafets"
+        },
+        {
+            "username": "valentina.sala",
+            "role": "user",
+            "display_name": "Valentina Sala",
+            "password": "alas.anitnelav"
+        },
+        {
+            "username": "roberto.baroni",
+            "role": "user",
+            "display_name": "Roberto Baroni",
+            "password": "inorab.otrebro"
+        },
+        {
+            "username": "alice.marini",
+            "role": "user",
+            "display_name": "Alice Marini",
+            "password": "iniram.ecila"
+        },
+        {
+            "username": "dario.fabbri",
+            "role": "user",
+            "display_name": "Dario Fabbri",
+            "password": "irbbaf.oirad"
+        },
+        {
+            "username": "simona.venturi",
+            "role": "user",
+            "display_name": "Simona Venturi",
+            "password": "irutnev.anomis"
+        },
+        {
+            "username": "enrico.santoro",
+            "role": "user",
+            "display_name": "Enrico Santoro",
+            "password": "orotnas.ocirne"
+        },
+        {
+            "username": "federica.palermo",
+            "role": "user",
+            "display_name": "Federica Palermo",
+            "password": "omrelap.aciredef"
         }
     ],
     "spaces": [
@@ -90,84 +150,190 @@
             "id": 1,
             "name": "Aula1",
             "capacity": 2,
-            "equipment": "",
+            "equipment": "Wi-Fi",
             "active": true,
-            "location": "Regesta"
+            "location": "regesta"
         },
         {
             "id": 2,
             "name": "Aula2",
             "capacity": 4,
-            "equipment": "",
+            "equipment": "Wi-Fi",
             "active": true,
-            "location": "Regesta"
+                "location": "regesta"
         },
         {
-            "id": 3,
-            "name": "Aula3",
-            "capacity": 6,
-            "equipment": "",
-            "active": false,
-            "location": "Scuola"
-        },
-        {
-            "id": 4,
-            "name": "Aula4",
-            "capacity": 8,
-            "equipment": "",
-            "active": true,
-            "location": "Biblioteca"
-        },
-        {
-            "id": 5,
-            "name": "Aula5",
-            "capacity": 10,
-            "equipment": "",
-            "active": false,
-            "location": "Scuola"
-        },
-        {
-            "id": 6,
-            "name": "Aula6",
+            "id": 11,
+            "name": "Aula Aurora",
             "capacity": 12,
-            "equipment": "",
+            "equipment": "Proiettore, Wi-Fi, Microfono",
             "active": true,
-            "location": "Biblioteca"
+                "location": "regesta"
         },
         {
-            "id": 7,
-            "name": "Aula7",
-            "capacity": 14,
-            "equipment": "",
+            "id": 12,
+            "name": "Sala delle Comete",
+            "capacity": 30,
+            "equipment": "Proiettore, Impianto Audio, Microfono",
             "active": true,
-            "location": "Regesta"
+              "location": "biblioteca"
         },
         {
-            "id": 8,
-            "name": "Aula8",
-            "capacity": 16,
-            "equipment": "",
-            "active": true,
-            "location": "Scuola"
-        },
-        {
-            "id": 9,
-            "name": "Aula9",
-            "capacity": 18,
-            "equipment": "",
-            "active": false,
-            "location": "Biblioteca"
-        },
-        {
-            "id": 10,
-            "name": "Aula10",
+            "id": 13,
+            "name": "Orto Botanico",
             "capacity": 20,
-            "equipment": "",
+            "equipment": "Proiettore portatile, Wi-Fi",
             "active": true,
-            "location": "Regesta"
+              "location": "altro"
+        },
+        {
+            "id": 14,
+            "name": "Sala del Tempo",
+            "capacity": 8,
+            "equipment": "TV, Lettore DVD, HDMI Switch",
+            "active": true,
+              "location": "scuola"
+        },
+        {
+            "id": 15,
+            "name": "Laboratorio Galilei",
+            "capacity": 18,
+            "equipment": "PC, Proiettore, Strumentazione elettronica",
+            "active": true,
+              "location": "regesta"
+        },
+        {
+            "id": 16,
+            "name": "Studio Monet",
+            "capacity": 6,
+            "equipment": "Tablet grafico, Stampante, Scanner",
+            "active": true,
+              "location": "regesta"
+        },
+        {
+            "id": 17,
+            "name": "Sala Mosaic",
+            "capacity": 14,
+            "equipment": "Proiettore, Wi-Fi, Microfono",
+            "active": true,
+              "location": "biblioteca"
+        },
+        {
+            "id": 18,
+            "name": "Aula Leonardo",
+            "capacity": 25,
+            "equipment": "PC, Proiettore, Microfono",
+            "active": true,
+              "location": "regesta"
+        },
+        {
+            "id": 19,
+            "name": "Sala Sirena",
+            "capacity": 10,
+            "equipment": "Impianto Audio, Luci dimmerabili",
+            "active": false,
+              "location": "biblioteca"
+        },
+        {
+            "id": 20,
+            "name": "Aula Galileo",
+            "capacity": 16,
+            "equipment": "Lavagna interattiva, Proiettore",
+            "active": true,
+              "location": "scuola"
+        },
+        {
+            "id": 21,
+            "name": "Sala Celeste",
+            "capacity": 22,
+            "equipment": "Wi-Fi, Monitor, Videoconferenza",
+            "active": true,
+              "location": "regesta"
+        },
+        {
+            "id": 22,
+            "name": "Aula Biblioteca",
+            "capacity": 28,
+            "equipment": "Postazioni PC, Lampade, Wi-Fi",
+            "active": true,
+              "location": "biblioteca"
+        },
+        {
+            "id": 23,
+            "name": "Sala Artemide",
+            "capacity": 9,
+            "equipment": "Telefono conferenza, Monitor, Microfono",
+            "active": true,
+              "location": "regesta"
+        },
+        {
+            "id": 24,
+            "name": "Aula Zen",
+            "capacity": 12,
+            "equipment": "Proiettore portatile, Speaker Bluetooth, Wi-Fi",
+            "active": true,
+              "location": "altro"
+        },
+        {
+            "id": 25,
+            "name": "Sala Pandora",
+            "capacity": 20,
+            "equipment": "Impianto Audio, Microfono, Schermo",
+            "active": false,
+              "location": "regesta"
+        },
+        {
+            "id": 26,
+            "name": "Sala Eclipse",
+            "capacity": 15,
+            "equipment": "Videoconferenza, Proiettore, Lavagna interattiva",
+            "active": true,
+              "location": "scuola"
+        },
+        {
+            "id": 27,
+            "name": "Aula Prism",
+            "capacity": 11,
+            "equipment": "Proiettore, Monitor",
+            "active": true,
+              "location": "regesta"
+        },
+        {
+            "id": 28,
+            "name": "Sala Nimbus",
+            "capacity": 26,
+            "equipment": "Monitor condivisi, Wi-Fi, Videoconferenza",
+            "active": true,
+                "location": "biblioteca"
+        },
+        {
+            "id": 29,
+            "name": "Aula Solaris",
+            "capacity": 32,
+            "equipment": "Impianto Audio, Proiettore 4K, Microfono",
+            "active": true,
+                "location": "regesta"
+        },
+        {
+            "id": 30,
+            "name": "Sala Horizon",
+            "capacity": 40,
+            "equipment": "Wi-Fi, Proiettore, Microfono",
+            "active": true,
+                "location": "altro"
         }
     ],
-    "bookings": [],
+    "bookings": [
+        {
+            "id": 1,
+            "space_id": 26,
+            "space_name": "Sala Eclipse",
+            "user": "luca.rossi",
+            "start_time": "2026-06-25 10:00",
+            "end_time": "2026-06-25 11:00",
+            "invitations": []
+        }
+    ],
     "notifications": [],
     "friend_requests": [
         {

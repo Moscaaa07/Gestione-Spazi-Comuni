@@ -259,6 +259,10 @@
         body.theme-neon .google-card .text-muted,
         body.theme-neon .google-card .form-text,
         body.theme-neon .google-card .small { color: #ffffff !important; }
+        /* Custom alert / error boxes should also show white descriptions in neon */
+        body.theme-neon #custom-alert-box .card-text,
+        body.theme-neon #custom-alert-box .card-body .card-text,
+        body.theme-neon #custom-alert-box h6 { color: #ffffff !important; }
         body.theme-neon .form-control,
         body.theme-neon .form-select {
             background: rgba(4,16,24,0.9);
@@ -562,6 +566,82 @@
 
         /* Lock page scroll while on login */
         .login-locked { overflow: hidden !important; height: 100vh !important; }
+
+        /* Cielo theme: shades of blue, black text */
+        body.theme-cielo {
+            background: linear-gradient(135deg, #e6f4ff 0%, #cfe9ff 50%, #b6ddff 100%);
+            color: #000000;
+        }
+        body.theme-cielo .card,
+        body.theme-cielo .google-card,
+        body.theme-cielo .modal-content {
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid #cfe9ff;
+            box-shadow: 0 6px 18px rgba(80,150,200,0.08);
+        }
+        body.theme-cielo .navbar {
+            background: linear-gradient(90deg,#7fb9ff 0%,#5aa6ff 100%) !important;
+            color: #000000;
+        }
+        body.theme-cielo a { color: #004b8d; }
+
+        /* Natura theme: light/normal greens, black text */
+        body.theme-natura {
+            background: linear-gradient(135deg, #e9f9ec 0%, #d6f7d6 50%, #bfeec0 100%);
+            color: #000000;
+        }
+        body.theme-natura .card,
+        body.theme-natura .google-card,
+        body.theme-natura .modal-content {
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid #c9efc9;
+            box-shadow: 0 6px 18px rgba(80,140,100,0.06);
+        }
+        body.theme-natura .navbar {
+            background: linear-gradient(90deg,#8fd29a 0%,#66c06a 100%) !important;
+            color: #000000;
+        }
+        body.theme-natura a { color: #145214; }
+
+        /* Sole theme: warm yellow/orange accents, black text */
+        body.theme-sole {
+            background: linear-gradient(135deg, #fff9e6 0%, #fff4cc 50%, #ffe89a 100%);
+            color: #000000;
+        }
+        body.theme-sole .card,
+        body.theme-sole .google-card,
+        body.theme-sole .modal-content {
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid #ffe89a;
+            box-shadow: 0 6px 18px rgba(200,150,50,0.06);
+        }
+        body.theme-sole .navbar {
+            background: linear-gradient(90deg,#ffd27a 0%,#ffc24a 100%) !important;
+            color: #000000;
+        }
+        body.theme-sole a { color: #4a3410; }
+
+        /* Terra theme: earth/beige tones, black text */
+        body.theme-terra {
+            background: linear-gradient(135deg, #fbf7ef 0%, #f2e8d0 50%, #e6d6b2 100%);
+            color: #000000;
+        }
+        body.theme-terra .card,
+        body.theme-terra .google-card,
+        body.theme-terra .modal-content {
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid #e6d6b2;
+            box-shadow: 0 6px 18px rgba(120,90,60,0.06);
+        }
+        body.theme-terra .navbar {
+            background: linear-gradient(90deg,#d9cbb0 0%,#cdb191 100%) !important;
+            color: #000000;
+        }
+        body.theme-terra a { color: #3b2b1a; }
     </style>
 </head>
 <body>
@@ -578,7 +658,7 @@
             <div class="mb-4">
                 <input type="password" id="password-input" class="form-control form-control-lg" placeholder="Inserisci la password" required onkeydown="if(event.key === 'Enter') login()">
                 <div class="mt-2 text-start">
-                    <a href="#" onclick="openResetModal(event)" class="text-decoration-none small fw-semibold">Avete dimenticato la password?</a>
+                    <a href="#" onclick="openResetModal(event)" class="text-decoration-none small fw-semibold">Hai dimenticato la password?</a>
                 </div>
             </div>
             
@@ -606,6 +686,10 @@
                         <button class="btn btn-sm" style="background-color: #f0f0f0; color: #212529; border: 1px solid #ccc;" onclick="selectTheme('theme-light')">☀️ Chiaro</button>
                         <button class="btn btn-sm" style="background: linear-gradient(90deg,#06f6d4,#ff4da6); color:#05060a; border: 1px solid rgba(255,255,255,0.06);" onclick="selectTheme('theme-neon')">⚡ Neon</button>
                         <button class="btn btn-sm" style="background-color: #ffb3d9; color: #2a2a2a; border: 2px solid #ff6b9d;" onclick="selectTheme('theme-retro')">🌸 Retro '80</button>
+                        <button class="btn btn-sm" style="background: linear-gradient(90deg,#cfe9ff,#8fc9ff); color:#000; border: 1px solid #8fc9ff;" onclick="selectTheme('theme-cielo')">☁️ Cielo</button>
+                        <button class="btn btn-sm" style="background: linear-gradient(90deg,#d6f7d6,#9be09b); color:#000; border: 1px solid #9be09b;" onclick="selectTheme('theme-natura')">🌿 Natura</button>
+                        <button class="btn btn-sm" style="background: linear-gradient(90deg,#fff4cc,#ffd27a); color:#000; border: 1px solid #ffd27a;" onclick="selectTheme('theme-sole')">☀️ Sole</button>
+                        <button class="btn btn-sm" style="background: linear-gradient(90deg,#f6efe6,#d9cbb0); color:#000; border: 1px solid #d9cbb0;" onclick="selectTheme('theme-terra')">🌾 Terra</button>
                     </div>
                 </div>
                 <div id="nav-notifications" class="me-3">
@@ -684,6 +768,14 @@
                             <option value="Scuola">Scuola</option>
                             <option value="Altro">Altro</option>
                         </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label text-muted small mb-0 fw-semibold">Filtra per Dotazione</label>
+                        <select id="filter-equipment" class="form-select form-select-sm" onchange="loadSpaces()">
+                            <option value="">Tutte le dotazioni</option>
+                        </select>
+                        <div class="form-text small text-muted">Seleziona una dotazione per filtrare le aule che la possiedono.</div>
                     </div>
                     
                     <div class="mb-3">
@@ -1108,6 +1200,8 @@
             // enable navbar chat button and restore page scroll
             const navChatBtn = document.getElementById('nav-chat-btn'); if (navChatBtn) navChatBtn.style.display = 'flex';
             document.body.classList.remove('login-locked');
+            // populate equipment filter when showing the app
+            populateEquipmentFilter();
             if(role === 'admin') {
                 document.getElementById('admin-panel').style.display = 'block';
                 loadAdminSpaces();
@@ -1122,7 +1216,7 @@
             const storedRole = localStorage.getItem('loggedRole');
             const storedDisplayName = localStorage.getItem('loggedDisplayName');
             let storedTheme = localStorage.getItem('theme') || 'theme-light';
-            if (!['theme-light','theme-retro','theme-neon','theme-natura','theme-cielo'].includes(storedTheme)) storedTheme = 'theme-light';
+            if (!['theme-light','theme-retro','theme-neon','theme-natura','theme-cielo','theme-sole','theme-terra'].includes(storedTheme)) storedTheme = 'theme-light';
             selectTheme(storedTheme, false);
 
             if(storedUser && storedRole) {
@@ -1130,6 +1224,7 @@
                 currentRole = storedRole;
                 showAppLayout(storedDisplayName || storedUser, storedRole);
                 loadSpaces();
+                populateEquipmentFilter();
                 loadMyBookings();
                 checkNotifications(currentUser);
                 checkInvitations(currentUser);
@@ -1144,6 +1239,53 @@
             } else {
                 document.body.classList.remove('login-locked');
             }
+        }
+
+        // POPOLA IL MENU DOTAZIONI A PARTIRE DA TUTTE LE AULE
+        function populateEquipmentFilter() {
+            fetch('/api/spaces')
+            .then(res => res.json())
+            .then(spaces => {
+                const set = new Set();
+                spaces.forEach(s => {
+                    if (s.equipment) {
+                        s.equipment.split(',').forEach(part => {
+                            const item = part.trim();
+                            if (item) set.add(item);
+                        });
+                    }
+                });
+                const sel = document.getElementById('filter-equipment');
+                if (!sel) return;
+                // clear existing (leave first option)
+                const existingFirst = sel.querySelector('option');
+                sel.innerHTML = '';
+                sel.appendChild(existingFirst || document.createElement('option'));
+                if (!existingFirst) {
+                    sel.options[0].value = '';
+                    sel.options[0].text = 'Tutte le dotazioni';
+                } else {
+                    sel.options[0].value = '';
+                    sel.options[0].text = 'Tutte le dotazioni';
+                }
+                // normalize values to lowercase for uniqueness, display in Title Case
+                function titleCase(str) {
+                    return str.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+                }
+                const normalized = {};
+                Array.from(set).forEach(raw => {
+                    const key = raw.toLowerCase();
+                    if (!normalized[key]) normalized[key] = raw;
+                });
+                Object.keys(normalized).sort().forEach(key => {
+                    const display = titleCase(normalized[key]);
+                    const opt = document.createElement('option');
+                    opt.value = key; // lowercase value for matching
+                    opt.text = display;
+                    sel.appendChild(opt);
+                });
+            })
+            .catch(err => console.error('Errore caricamento dotazioni:', err));
         }
 
         window.addEventListener('DOMContentLoaded', initializeApp);
@@ -1170,7 +1312,7 @@
         }
 
         function selectTheme(theme, save = true) {
-            document.body.classList.remove('theme-light', 'theme-retro', 'theme-neon', 'theme-natura', 'theme-cielo');
+            document.body.classList.remove('theme-light', 'theme-retro', 'theme-neon', 'theme-natura', 'theme-cielo', 'theme-sole', 'theme-terra');
             document.body.classList.add(theme);
             if (save) {
                 localStorage.setItem('theme', theme);
@@ -1545,18 +1687,26 @@
         function loadSpaces() {
             const capacity = document.getElementById('filter-capacity').value || 0;
             const nameSearch = document.getElementById('filter-name').value || "";
-            
             const selectedLocation = document.getElementById('filter-location').value || "";
+            const selectedEquipment = document.getElementById('filter-equipment') ? document.getElementById('filter-equipment').value : "";
             fetch(`/api/spaces?capacity=${capacity}&name=${encodeURIComponent(nameSearch)}&location=${encodeURIComponent(selectedLocation)}`)
             .then(res => res.json())
             .then(spaces => {
+                // if equipment filter selected, apply client-side filtering (API doesn't support equipment query)
+                let filtered = spaces;
+                if (selectedEquipment) {
+                    filtered = spaces.filter(s => {
+                        if (!s.equipment) return false;
+                        return s.equipment.toLowerCase().split(',').map(x=>x.trim()).includes(selectedEquipment.toLowerCase());
+                    });
+                }
                 const list = document.getElementById('spaces-list');
                 list.innerHTML = "";
-                if(spaces.length === 0) {
+                if(filtered.length === 0) {
                     list.innerHTML = "<p class='text-muted small p-2'>Nessuno spazio attivo corrispondente.</p>";
                     return;
                 }
-                spaces.forEach(s => {
+                filtered.forEach(s => {
                     list.innerHTML += `
                         <div class="list-group-item d-flex justify-content-between align-items-start p-3 mb-2 border rounded shadow-sm bg-white">
                             <div>
