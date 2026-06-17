@@ -173,6 +173,46 @@ def respond_friend_request(response: FriendRequestResponse):
     return {"message": f"Richiesta di amicizia {response.status}."}
 
 
+@router.post("/remove-friend")
+def remove_friend(payload: dict):
+    user = payload.get('user')
+    target = payload.get('target')
+    if not user or not target:
+        raise HTTPException(status_code=400, detail="Parametri mancanti.")
+    data = load_db()
+    u = next((x for x in data.get('users', []) if x['username'] == user), None)
+    t = next((x for x in data.get('users', []) if x['username'] == target), None)
+    if not u or not t:
+        raise HTTPException(status_code=404, detail="Utente non trovato.")
+
+    u.setdefault('friends', [])
+    t.setdefault('friends', [])
+
+    if target not in u['friends']:
+        raise HTTPException(status_code=400, detail="Gli utenti non sono amici.")
+
+    # rimuovi amicizia da entrambe le parti
+    u['friends'] = [f for f in u['friends'] if f != target]
+    t['friends'] = [f for f in t['friends'] if f != user]
+
+    # aggiungi notifica di sicurezza per il target e conferma per l'utente
+    if 'notifications' not in data:
+        data['notifications'] = []
+    data['notifications'].append({
+        'user': target,
+        'message': f"L'utente {user} ha rimosso la vostra amicizia. Se non riconosci questa azione, contatta l'assistenza.",
+        'read': False
+    })
+    data['notifications'].append({
+        'user': user,
+        'message': f"Hai rimosso l'amicizia con {target}.",
+        'read': False
+    })
+
+    save_db(data)
+    return {"message": "Amicizia rimossa e notifiche inviate."}
+
+
 @router.post("/update-displayname")
 def update_display_name(payload: dict):
     username = payload.get('username')

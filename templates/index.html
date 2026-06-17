@@ -8,11 +8,19 @@
         body { background-color: #f8f9fa; }
         .google-card {
             max-width: 450px;
-            margin: 80px auto;
+            margin: 0 auto;
             padding: 40px;
             border: 1px solid #dadce0;
             border-radius: 8px;
             background-color: #fff;
+        }
+
+        #login-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
         }
         .google-logo {
             display: block;
@@ -247,6 +255,10 @@
             letter-spacing: 0.02em;
         }
         body.theme-neon .text-muted { color: rgba(234,255,255,0.7) !important; }
+        /* Ensure login card error/descriptions are readable in neon theme */
+        body.theme-neon .google-card .text-muted,
+        body.theme-neon .google-card .form-text,
+        body.theme-neon .google-card .small { color: #ffffff !important; }
         body.theme-neon .form-control,
         body.theme-neon .form-select {
             background: rgba(4,16,24,0.9);
@@ -514,6 +526,42 @@
             border-radius: 4px;
             font-size: 0.85rem;
         }
+        /* Ensure room names like "Aula1" are black across screens */
+        #spaces-list .fw-bold, #admin-spaces-list .fw-bold, #admin-global-bookings-list .fw-bold, #my-bookings-list .fw-bold, #profile-bookings-list .fw-bold, .list-group-item .fw-bold {
+            color: #000 !important;
+        }
+
+        /* In neon theme, keep room names white for readability */
+        body.theme-neon #spaces-list .fw-bold,
+        body.theme-neon #admin-spaces-list .fw-bold,
+        body.theme-neon #admin-global-bookings-list .fw-bold,
+        body.theme-neon #my-bookings-list .fw-bold,
+        body.theme-neon #profile-bookings-list .fw-bold,
+        body.theme-neon .list-group-item .fw-bold {
+            color: #fff !important;
+        }
+
+        /* Navbar chat button (hidden until login) */
+        #nav-chat-btn {
+            display: none;
+            gap: 6px;
+            align-items: center;
+        }
+
+        /* Allow chat card to float when requested (kept under the top navbar) */
+        #chat-card.floating {
+            position: fixed !important;
+            right: 20px;
+            bottom: 90px;
+            width: 380px;
+            max-height: 70vh;
+            overflow: auto;
+            z-index: 900 !important; /* lower than navbar to scroll under it */
+            display: block !important;
+        }
+
+        /* Lock page scroll while on login */
+        .login-locked { overflow: hidden !important; height: 100vh !important; }
     </style>
 </head>
 <body>
@@ -578,6 +626,13 @@
                     </div>
                 </div>
                 <button class="btn btn-sm btn-outline-light me-3" onclick="goHomepage()" title="Torna alla home">🏠 Home</button>
+                <button id="nav-chat-btn" class="btn btn-sm btn-outline-light me-3 d-flex align-items-center" onclick="openChatLarge()" title="Apri chat" style="gap:6px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="#7ef9ff" opacity="0.95"/>
+                        <path d="M7 10h10M7 13h6" stroke="#01161a" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="d-none d-md-inline">Chat</span>
+                </button>
                 <span id="user-display" class="navbar-text text-white fw-bold me-3" onclick="openUserProfile()" style="cursor:pointer; text-decoration: underline;" title="Apri profilo"></span>
                 <div id="nav-mascot" class="me-2 position-relative">
                     <button type="button" onclick="toggleMascotPanel()" class="btn btn-outline-light btn-sm position-relative" title="Apri Pinguino Guida">
@@ -792,22 +847,7 @@
                     <button class="btn btn-primary btn-sm" onclick="submitDisplayNameChange()">Aggiorna nome</button>
                 </div>
 
-                <div class="card p-3 shadow-sm mb-3" id="chat-card">
-                    <h6 class="fw-bold mb-3">Chat con utenti</h6>
-                    <div class="d-flex" style="gap:12px;">
-                        <div style="width:40%; max-width:200px;">
-                            <div id="conversations-list" class="list-group small" style="max-height:280px; overflow:auto;"></div>
-                        </div>
-                        <div style="flex:1;">
-                            <div id="chat-with" class="mb-2 small text-muted">Seleziona una conversazione</div>
-                            <div id="chat-messages" style="height:200px; overflow:auto; background:#fff; border:1px solid #dee2e6; padding:8px; border-radius:6px;" class="mb-2"></div>
-                            <div class="input-group input-group-sm">
-                                <input type="text" id="chat-input" class="form-control" placeholder="Scrivi un messaggio...">
-                                <button class="btn btn-primary" onclick="sendChatMessage()">Invia</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Chat moved to global floating panel -->
 
                 <div class="card p-3 shadow-sm">
                     <h6 class="fw-bold mb-3">Cambia password</h6>
@@ -876,6 +916,31 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
+    <!-- Chat button moved to navbar (top-right). -->
+
+    <!-- Global floating chat panel (hidden until opened) -->
+    <div id="chat-card" class="card p-3 shadow-sm" style="display:none; width:360px;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="fw-bold mb-0">Chat con utenti</h6>
+            <div>
+                <button class="btn btn-sm btn-outline-secondary me-1" onclick="closeFloatingChat()">Chiudi</button>
+            </div>
+        </div>
+        <div class="d-flex" style="gap:12px;">
+            <div style="width:40%; max-width:140px;">
+                <div id="conversations-list" class="list-group small" style="max-height:280px; overflow:auto;"></div>
+            </div>
+            <div style="flex:1;">
+                <div id="chat-with" class="mb-2 small text-muted">Seleziona una conversazione</div>
+                <div id="chat-messages" style="height:200px; overflow:auto; background:#fff; border:1px solid #dee2e6; padding:8px; border-radius:6px;" class="mb-2"></div>
+                <div class="input-group input-group-sm">
+                    <input type="text" id="chat-input" class="form-control" placeholder="Scrivi un messaggio...">
+                    <button class="btn btn-primary" onclick="sendChatMessage()">Invia</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let currentUser = "";
         let currentRole = "";
@@ -921,6 +986,8 @@
             event.preventDefault();
             document.getElementById('reg-email').value = '';
             document.getElementById('reg-password').value = '';
+            // Temporarily remove login scroll lock so Bootstrap modal centers correctly
+            document.body.classList.remove('login-locked');
             registerModal.show();
         }
 
@@ -952,6 +1019,14 @@
             })
             .catch(err => alert("Errore: " + err.message));
         }
+
+        // Re-apply login lock when register modal is fully hidden (if login still visible)
+        document.getElementById('registerModal').addEventListener('hidden.bs.modal', function() {
+            const loginSec = document.getElementById('login-section');
+            if (loginSec && loginSec.style.display !== 'none') {
+                document.body.classList.add('login-locked');
+            }
+        });
 
         function submitResetPassword() {
             const email = document.getElementById('reset-email').value;
@@ -1015,7 +1090,10 @@
             document.getElementById('main-section').style.display = 'none';
             document.getElementById('profile-section').style.display = 'none';
             document.getElementById('admin-panel').style.display = 'none';
-            document.getElementById('login-section').style.display = 'block';
+            document.getElementById('login-section').style.display = 'flex';
+            // hide navbar chat button and lock page scroll on login
+            const navChatBtnHide = document.getElementById('nav-chat-btn'); if (navChatBtnHide) navChatBtnHide.style.display = 'none';
+            document.body.classList.add('login-locked');
             localStorage.removeItem('loggedUser');
             localStorage.removeItem('loggedRole');
             localStorage.removeItem('loggedDisplayName');
@@ -1027,6 +1105,9 @@
             document.getElementById('app-nav').style.display = 'block';
             document.getElementById('main-section').style.display = 'block';
             document.getElementById('profile-section').style.display = 'none';
+            // enable navbar chat button and restore page scroll
+            const navChatBtn = document.getElementById('nav-chat-btn'); if (navChatBtn) navChatBtn.style.display = 'flex';
+            document.body.classList.remove('login-locked');
             if(role === 'admin') {
                 document.getElementById('admin-panel').style.display = 'block';
                 loadAdminSpaces();
@@ -1052,6 +1133,16 @@
                 loadMyBookings();
                 checkNotifications(currentUser);
                 checkInvitations(currentUser);
+                // show navbar chat button for logged users
+                const navChatBtnInit = document.getElementById('nav-chat-btn');
+                if (navChatBtnInit) navChatBtnInit.style.display = 'flex';
+            }
+            // Lock scroll if login is visible
+            const loginSec = document.getElementById('login-section');
+            if (loginSec && loginSec.style.display !== 'none') {
+                document.body.classList.add('login-locked');
+            } else {
+                document.body.classList.remove('login-locked');
             }
         }
 
@@ -1107,7 +1198,12 @@
                 const displayInput = document.getElementById('new-display-name');
                 if (displayInput) displayInput.value = profile.display_name;
                 document.getElementById('profile-role').innerText = `Ruolo: ${profile.role}`;
-                document.getElementById('friends-list').innerHTML = profile.friends.length > 0 ? profile.friends.map(f => `<div class="badge bg-info text-dark me-1 mb-1">${f}</div>`).join('') : '<p class="small text-muted">Nessun amico ancora.</p>';
+                document.getElementById('friends-list').innerHTML = profile.friends.length > 0 ? profile.friends.map(f => `
+                    <div class="badge bg-info text-dark me-1 mb-1 position-relative friend-badge" data-username="${f}" style="padding-right:22px;">
+                        ${f}
+                        <button class="btn btn-sm remove-friend-btn" onclick="promptRemoveFriend('${f}')" aria-label="Rimuovi" style="position:absolute; top:-6px; right:-6px; width:20px; height:20px; padding:0; line-height:1; border-radius:50%; background:#dc3545; color:#fff; border:none;">×</button>
+                    </div>
+                `).join('') : '<p class="small text-muted">Nessun amico ancora.</p>';
 
                 const incomingList = document.getElementById('incoming-friend-requests');
                 incomingList.innerHTML = '';
@@ -1601,12 +1697,13 @@
                 bookings.forEach(b => {
                     const isOwner = b.user === currentUser;
                     const hostLabel = isOwner ? "<span class='badge bg-info'>Tua</span>" : `<span class='badge bg-warning text-dark'>Ospite di ${b.user}</span>`;
-                    
+                    const invites = (b.invitations || []).map(inv => `${inv.username}${inv.status ? ' ('+inv.status+')' : ''}`).join(', ');
                     list.innerHTML += `
                         <div class="list-group-item d-flex justify-content-between align-items-center p-2 mb-2 border rounded shadow-sm bg-white">
                             <div>
                                 <div class="small fw-bold text-dark">${b.space_name} ${hostLabel}</div>
                                 <div class="small text-muted" style="font-size: 11px;">Orario: ${b.start_time} - ${b.end_time.split(" ")[1]}</div>
+                                ${invites ? `<div class="small text-muted" style="font-size:11px;">Invitati: ${invites}</div>` : ''}
                             </div>
                             ${isOwner ? `<button onclick="cancelBooking(${b.id})" class="btn btn-danger btn-sm px-2 py-0 fw-semibold" style="font-size:11px;">Disdici</button>` : ''}
                         </div>
@@ -1775,12 +1872,14 @@
                     return;
                 }
                 bookings.forEach(b => {
+                    const invites = (b.invitations || []).map(inv => `${inv.username}${inv.status ? ' ('+inv.status+')' : ''}`).join(', ');
                     list.innerHTML += `
                         <div class="list-group-item d-flex justify-content-between align-items-center p-2 mb-1 border-0 border-bottom bg-light">
                             <div>
                                 <span class="fw-bold text-dark">${b.space_name}</span> 
                                 <span class="badge bg-primary ms-2">Utente: ${b.user}</span>
                                 <div class="small text-muted mt-1">Periodo d'uso: <strong>${b.start_time}</strong> fino a <strong>${b.end_time}</strong></div>
+                                ${invites ? `<div class="small text-muted mt-1">Invitati: ${invites}</div>` : ''}
                             </div>
                             <span class="text-muted small">ID Prenotazione: #${b.id}</span>
                         </div>
@@ -1952,6 +2051,83 @@
                 if (currentChatWith) loadMessages(currentChatWith);
             }
         }, 5000);
+
+        // Toggle floating chat display (moves the existing chat card into a floating position)
+        function toggleFloatingChat() {
+            const chatCard = document.getElementById('chat-card');
+            if (!chatCard) return alert('Chat non disponibile.');
+            if (chatCard.classList.contains('floating')) {
+                chatCard.classList.remove('floating');
+                // if profile was hidden, keep it hidden
+                chatCard.style.display = 'none';
+            } else {
+                chatCard.classList.add('floating');
+                chatCard.style.display = 'block';
+                // ensure conversations loaded
+                loadConversations();
+            }
+        }
+
+        function closeFloatingChat() {
+            const chatCard = document.getElementById('chat-card');
+            if (!chatCard) return;
+            chatCard.classList.remove('floating');
+            chatCard.style.display = 'none';
+        }
+
+        function openChatLarge() {
+            const chatCard = document.getElementById('chat-card');
+            if (!chatCard) return alert('Chat non disponibile.');
+            // make it larger for navbar-triggered open
+            chatCard.classList.add('floating');
+            chatCard.style.display = 'block';
+            chatCard.style.width = '760px';
+            chatCard.style.maxHeight = '80vh';
+            chatCard.style.right = '20px';
+            chatCard.style.bottom = '60px';
+            // ensure conversations loaded
+            loadConversations();
+        }
+
+        // close chat when clicking outside (but ignore clicks on the navbar chat button)
+        document.addEventListener('click', function(e) {
+            try {
+                const chatCard = document.getElementById('chat-card');
+                if (!chatCard || chatCard.style.display === 'none') return;
+                const navBtn = document.getElementById('nav-chat-btn');
+                const target = e.target;
+                if (chatCard.contains(target)) return; // click inside chat
+                if (navBtn && navBtn.contains(target)) return; // click on open button
+                // otherwise close
+                closeFloatingChat();
+            } catch (err) {
+                console.error('Error handling outside click for chat:', err);
+            }
+        });
+
+        // Prompt and remove friend with security notification
+        function promptRemoveFriend(target) {
+            if (!currentUser) return alert('Devi essere loggato per rimuovere un amico.');
+            const ok = confirm(`Sei sicuro di voler rimuovere l'amicizia con ${target}? Verrà inviata una notifica di sicurezza.`);
+            if (!ok) return;
+            removeFriend(target);
+        }
+
+        function removeFriend(target) {
+            fetch('/api/auth/remove-friend', {
+                method: 'POST', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ user: currentUser, target: target })
+            })
+            .then(res => {
+                if (!res.ok) return res.json().then(err => { throw new Error(err.detail); });
+                return res.json();
+            })
+            .then(data => {
+                alert(data.message || 'Amico rimosso.');
+                loadUserProfile();
+            })
+            .catch(err => alert('Errore: ' + err.message));
+        }
     </script>
 </body>
 </html>
