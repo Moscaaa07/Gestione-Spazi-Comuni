@@ -2757,6 +2757,8 @@
 
         // --- Chat functions ---
         let currentChatWith = null;
+        let _lastMsgId = null;        // ultimo id messaggio noto (evita re-render inutili)
+        let _chatUserScrolled = false; // l'utente ha scrollato manualmente verso l'alto
 
         // Genera un colore avatar deterministico dall'username
         function _avatarColor(username) {
@@ -2858,7 +2860,8 @@
             const emptyState = document.getElementById('chat-empty-state');
             if (emptyState) emptyState.style.display = 'none';
             box.innerHTML = '<div class="d-flex justify-content-center align-items-center h-100"><div class="spinner-border spinner-border-sm text-primary" style="opacity:0.5;"></div></div>';
-            loadMessages(withUser);
+            _lastMsgId = null; // reset per forzare il primo render
+            loadMessages(withUser, true);
             // Aggiorna active class nella sidebar
             document.querySelectorAll('.conv-item').forEach(el => {
                 el.classList.toggle('active', el.getAttribute('onclick') && el.getAttribute('onclick').includes(`'${withUser}'`));
@@ -2870,42 +2873,54 @@
             }).then(() => loadConversations()).catch(()=>{});
         }
 
-        function loadMessages(withUser) {
-            fetch(`/api/auth/messages?user=${encodeURIComponent(currentUser)}&with_user=${encodeURIComponent(withUser)}`)
-            .then(res => res.json())
-            .then(msgs => {
-                const box = document.getElementById('chat-messages');
-                box.innerHTML = '';
-                if (!msgs || msgs.length === 0) {
-                    box.innerHTML = `
-                        <div class="d-flex flex-column align-items-center justify-content-center h-100" style="opacity:0.5;">
-                            <div style="font-size:2.5rem;">👋</div>
-                            <div class="small text-muted mt-2">Inizia la conversazione!</div>
-                        </div>`;
-                    return;
+        function _renderMessages(msgs, box, forceScroll) {
+            const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60;
+            box.innerHTML = '';
+            if (!msgs || msgs.length === 0) {
+                box.innerHTML = `
+                    <div class="d-flex flex-column align-items-center justify-content-center h-100" style="opacity:0.5;">
+                        <div style="font-size:2.5rem;">👋</div>
+                        <div class="small text-muted mt-2">Inizia la conversazione!</div>
+                    </div>`;
+                _lastMsgId = null;
+                return;
+            }
+            let lastDate = null;
+            msgs.forEach(m => {
+                const isMine = m.from !== currentChatWith;
+                const msgDate = new Date(m.timestamp).toLocaleDateString('it-IT');
+                if (msgDate !== lastDate) {
+                    lastDate = msgDate;
+                    const sep = document.createElement('div');
+                    sep.className = 'd-flex align-items-center gap-2 my-2';
+                    sep.innerHTML = `<div style="flex:1;height:1px;background:rgba(0,0,0,0.08);"></div><span style="font-size:10px;color:#9ca3af;white-space:nowrap;">${msgDate}</span><div style="flex:1;height:1px;background:rgba(0,0,0,0.08);"></div>`;
+                    box.appendChild(sep);
                 }
-                let lastDate = null;
-                msgs.forEach(m => {
-                    const isMine = m.from !== withUser;
-                    const msgDate = new Date(m.timestamp).toLocaleDateString('it-IT');
-                    // Separatore data
-                    if (msgDate !== lastDate) {
-                        lastDate = msgDate;
-                        const sep = document.createElement('div');
-                        sep.className = 'd-flex align-items-center gap-2 my-2';
-                        sep.innerHTML = `<div style="flex:1;height:1px;background:rgba(0,0,0,0.08);"></div><span style="font-size:10px;color:#9ca3af;white-space:nowrap;">${msgDate}</span><div style="flex:1;height:1px;background:rgba(0,0,0,0.08);"></div>`;
-                        box.appendChild(sep);
-                    }
-                    const row = document.createElement('div');
-                    row.className = `msg-row ${isMine ? 'mine' : 'theirs'}`;
-                    const timeStr = _msgTimeFormat(m.timestamp);
-                    row.innerHTML = `
-                        <div class="msg-bubble">${_escapeHtml(m.content)}</div>
-                        <div class="msg-time">${timeStr}</div>`;
-                    box.appendChild(row);
-                });
-                box.scrollTop = box.scrollHeight;
+                const row = document.createElement('div');
+                row.className = `msg-row ${isMine ? 'mine' : 'theirs'}`;
+                row.innerHTML = `
+                    <div class="msg-bubble">${_escapeHtml(m.content)}</div>
+                    <div class="msg-time">${_msgTimeFormat(m.timestamp)}</div>`;
+                box.appendChild(row);
             });
+            _lastMsgId = msgs[msgs.length - 1].id;
+            // Scrolla in fondo solo se l'utente era già in fondo, oppure se forzato (primo caricamento / messaggio inviato)
+            if (forceScroll || atBottom) box.scrollTop = box.scrollHeight;
+        }
+
+        function loadMessages(withUser, forceScroll) {
+            if (!currentUser || !withUser) return;
+            fetch(`/api/auth/messages?user=${encodeURIComponent(currentUser)}&with_user=${encodeURIComponent(withUser)}`)
+            .then(res => { if (!res.ok) throw new Error(res.status); return res.json(); })
+            .then(msgs => {
+                const newLastId = (msgs && msgs.length) ? msgs[msgs.length - 1].id : null;
+                // Se non ci sono nuovi messaggi e non è un caricamento forzato, non ri-renderizzare
+                if (!forceScroll && newLastId === _lastMsgId) return;
+                const box = document.getElementById('chat-messages');
+                if (!box) return;
+                _renderMessages(msgs, box, forceScroll);
+            })
+            .catch(() => { /* errore silenzioso durante il polling */ });
         }
 
         function _escapeHtml(str) {
@@ -2930,7 +2945,7 @@
             })
             .then(res => res.json())
             .then(() => {
-                loadMessages(currentChatWith);
+                loadMessages(currentChatWith, true);
                 loadConversations();
             })
             .catch(() => {
@@ -2939,14 +2954,14 @@
             });
         }
 
-        // Auto-refresh messaggi e conversazioni quando la chat è aperta
+        // Auto-refresh messaggi e conversazioni in tempo reale (2s)
         setInterval(() => {
             const chatCard = document.getElementById('chat-card');
             if (chatCard && chatCard.classList.contains('floating')) {
                 loadConversations();
-                if (currentChatWith) loadMessages(currentChatWith);
+                if (currentChatWith) loadMessages(currentChatWith, false);
             }
-        }, 5000);
+        }, 2000);
 
         // Auto-refresh notifiche in tempo reale (stesso intervallo della chat)
         setInterval(() => {
