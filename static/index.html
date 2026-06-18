@@ -816,6 +816,25 @@
             color: #fff !important;
         }
 
+        /* Spaces list: scroll after 5 items */
+        #spaces-list {
+            max-height: 430px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* Admin spaces list: scroll after 6 items */
+        #admin-spaces-list {
+            max-height: 516px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* Neon theme: keep placeholder text visible in the friends input */
+        body.theme-neon #friend-target::placeholder {
+            color: #ffffff !important;
+        }
+
         /* Navbar chat button (hidden until login) */
         #nav-chat-btn {
             display: none;
@@ -2385,7 +2404,18 @@
             const invitesText = document.getElementById('book-invites').value;
             
             if(!date || !time) return alert("Inserisci una data e un orario validi.");
-            
+
+            // Validazione orario: solo dalle 08:00 alle 18:00
+            const [startHour, startMin] = time.split(':').map(Number);
+            const startMinutes = startHour * 60 + startMin;
+            const endMinutes = startMinutes + parseInt(duration) * 60;
+            if (startMinutes < 8 * 60) {
+                return alert("⚠️ Le prenotazioni non possono iniziare prima delle 08:00.");
+            }
+            if (endMinutes > 18 * 60) {
+                return alert("⚠️ La prenotazione supera l'orario massimo consentito (18:00). Seleziona un orario di inizio più anticipato o riduci la durata.");
+            }
+
             const formattedStartTime = `${date} ${time}`;
             
             // Generazione array invitati pulito da spazi vuoti o duplicati
@@ -2915,6 +2945,13 @@
             if (chatCard && chatCard.classList.contains('floating')) {
                 loadConversations();
                 if (currentChatWith) loadMessages(currentChatWith);
+            }
+        }, 5000);
+
+        // Auto-refresh notifiche in tempo reale (stesso intervallo della chat)
+        setInterval(() => {
+            if (currentUser) {
+                checkNotifications(currentUser);
             }
         }, 5000);
 

@@ -1,69 +1,73 @@
 """
-seed.py — Popola il database con dati iniziali.
-Rieseguibile: non duplica i dati esistenti.
+seed.py — Popola il database da zero (safe: non duplica dati esistenti).
+Esegui con:  python seed.py
 """
 from database import create_tables, SessionLocal, User, Space
 
 create_tables()
 db = SessionLocal()
 
-# ─── Admin ufficiali ────────────────────────────────────────────────────────
-admins = [
+# ─── Admin ──────────────────────────────────────────────────────────────────
+for email, pwd, nome in [
     ("mosca@admin.com",  "nimdA", "Mosca Admin"),
     ("andrea@admin.com", "nimdA", "Andrea Admin"),
-]
-for email, pwd, name in admins:
+]:
     if not db.query(User).filter(User.username == email).first():
-        db.add(User(username=email, password=pwd, role="admin", display_name=name))
+        db.add(User(username=email, password=pwd, role="admin", display_name=nome))
 
-# ─── Utenti di esempio ──────────────────────────────────────────────────────
-users = [
-    ("mario@scuola.it",  "mario123",  "Mario Rossi"),
-    ("giulia@scuola.it", "giulia123", "Giulia Bianchi"),
-    ("luca@scuola.it",   "luca123",   "Luca Verdi"),
-    ("sara@scuola.it",   "sara123",   "Sara Ferrari"),
-]
-for email, pwd, name in users:
+# ─── Utenti ─────────────────────────────────────────────────────────────────
+for email, pwd, nome in [
+    ("chiara@scuola.it",  "chiara2024",  "Chiara Martini"),
+    ("davide@scuola.it",  "davide2024",  "Davide Romano"),
+    ("elena@scuola.it",   "elena2024",   "Elena Conti"),
+    ("marco@scuola.it",   "marco2024",   "Marco Esposito"),
+]:
     if not db.query(User).filter(User.username == email).first():
-        db.add(User(username=email, password=pwd, role="user", display_name=name))
+        db.add(User(username=email, password=pwd, role="user", display_name=nome))
 
-# ─── Spazi ──────────────────────────────────────────────────────────────────
-# (nome, capienza, dotazioni, sede)
-spaces = [
+# ─── Stanze ─────────────────────────────────────────────────────────────────
+stanze = [
     # Regesta
-    ("Aula Magna",           40, "Proiettore, Microfono, Impianto Audio, Palco",   "Regesta"),
-    ("Sala Riunioni A",      10, "TV, Lavagna, Videoconferenza",                   "Regesta"),
-    ("Sala Riunioni B",       8, "Lavagna, TV",                                    "Regesta"),
-    ("Sala Conferenze",      35, "Proiettore, Microfono, TV, Wi-Fi",               "Regesta"),
-    ("Sala Relax",           12, "Divani, Macchina Caffè, Frigorifero",            "Regesta"),
-    ("Sala Formazione",      20, "Proiettore, Lavagna, PC, Wi-Fi",                 "Regesta"),
-    ("Open Space Creativo",  25, "Lavagne Multiple, PC, Stampante 3D",             "Regesta"),
+    ("Sala Executive",          12, "Proiettore 4K, Videoconferenza HD, Lavagna Smart",     "Regesta"),
+    ("Sala Brainstorming",      10, "Lavagne Multiple, Post-it, Wi-Fi, Musica Ambient",      "Regesta"),
+    ("Sala Formazione Pro",     25, "Proiettore, PC per docente, Wi-Fi, Microfono",          "Regesta"),
+    ("Auditorium Regesta",      80, "Palco, Impianto Audio, Proiettore, Microfono Cordless", "Regesta"),
+    ("Open Space Alpha",        20, "Schermi Multipli, Wi-Fi, Prese USB, Stampante",         "Regesta"),
+    ("Sala Riunioni Piccola",    6, 'TV 55", Videoconferenza, Lavagna',                      "Regesta"),
     # Scuola
-    ("Aula Informatica 1",   24, "PC, Proiettore, Wi-Fi, Stampante",               "Scuola"),
-    ("Aula Informatica 2",   20, "PC, Proiettore, Wi-Fi",                          "Scuola"),
-    ("Laboratorio Scienze",  25, "Microscopi, Proiettore, Cappe, Lavandino",       "Scuola"),
-    ("Laboratorio Arte",     18, "Cavalletti, Lavandino, Armadietti",              "Scuola"),
-    ("Palestra",             40, "Attrezzi Ginnici, Spogliatoi, Docce",            "Scuola"),
-    ("Aula Musica",          20, "Pianoforte, Impianto Audio, Leggii",             "Scuola"),
-    ("Aula Disegno Tecnico", 22, "Tavoli Tecnici, Proiettore, Lavagna",            "Scuola"),
+    ("Laboratorio Digitale",    20, "PC, Stampante 3D, Arduino Kit, Proiettore",             "Scuola"),
+    ("Aula Studio A",           18, "Wi-Fi, Prese Elettriche, Luce Naturale, Silenzio",      "Scuola"),
+    ("Aula Studio B",           18, "Wi-Fi, Prese Elettriche, Luce Naturale",                "Scuola"),
+    ("Laboratorio Lingue",      24, "PC, Cuffie, Microfono, Proiettore, Lavagna Digitale",   "Scuola"),
+    ("Palestra Piccola",        30, "Attrezzi, Tappeti, Specchi, Impianto Audio",             "Scuola"),
+    ("Aula Arte e Design",      16, "Tavoli Tecnici, Lavandino, Cavalletti, Proiettore",      "Scuola"),
     # Biblioteca
-    ("Sala Studio Silenziosa", 15, "Wi-Fi, Prese Elettriche, Luce Naturale",       "Biblioteca"),
-    ("Sala Studio Gruppo",     20, "Wi-Fi, Lavagna, Proiettore, Prese Elettriche", "Biblioteca"),
-    ("Sala Lettura",           30, "Wi-Fi, Luce Naturale, Scaffali",               "Biblioteca"),
-    ("Sala Multimediale",      12, "PC, Cuffie, Wi-Fi, Scanner",                   "Biblioteca"),
+    ("Sala Consultazione",      20, "Wi-Fi, Prese, Scaffali di Riferimento, Silenzio",       "Biblioteca"),
+    ("Sala Ricerca Digitale",   12, "PC, Scanner, Stampante, Wi-Fi Alta Velocità",            "Biblioteca"),
+    ("Sala Seminari",           30, "Proiettore, Microfono, Lavagna, Wi-Fi",                 "Biblioteca"),
+    ("Angolo Studio Privato",    4, "Wi-Fi, Presa, Luce Regolabile, Privacy",                "Biblioteca"),
     # Altro
-    ("Spazio Esterno A",     50, "Gazebo, Prese Esterne, Wi-Fi Esterno",           "Altro"),
-    ("Spazio Esterno B",     30, "Gazebo, Barbecue",                               "Altro"),
-    ("Sala Polivalente",     45, "Proiettore, Impianto Audio, Cucina, Wi-Fi",      "Altro"),
-    ("Sala Mostre",          60, "Illuminazione Regolabile, Wi-Fi, Pareti Espositive", "Altro"),
+    ("Terrazzo Panoramico",     40, "Wi-Fi Esterno, Gazebo, Prese Esterne, Vista Città",     "Altro"),
+    ("Sala Polivalente Sud",    50, "Proiettore, Impianto Audio, Cucina Attrezzata, Wi-Fi",  "Altro"),
+    ("Sala Mostre Temporanee",  60, "Illuminazione Professionale, Wi-Fi, Pannelli Mobili",   "Altro"),
+    ("Spazio Maker",            15, "Stampante 3D, Laser Cutter, Arduino, Wi-Fi",             "Altro"),
 ]
-
-for name, cap, equip, loc in spaces:
-    if not db.query(Space).filter(Space.name == name).first():
-        db.add(Space(name=name, capacity=cap, equipment=equip, location=loc))
+for nome, cap, dotaz, sede in stanze:
+    if not db.query(Space).filter(Space.name == nome).first():
+        db.add(Space(name=nome, capacity=cap, equipment=dotaz, location=sede))
 
 db.commit()
 db.close()
 print("✅ Seed completato.")
-print(f"   {len(admins)} admin | {len(users)} utenti | {len(spaces)} spazi inseriti/verificati")
-print("   Admin: mosca@admin.com / andrea@admin.com  →  password: nimdA")
+print()
+print("  ADMIN:")
+print("    mosca@admin.com   /  nimdA")
+print("    andrea@admin.com  /  nimdA")
+print()
+print("  UTENTI:")
+print("    chiara@scuola.it  /  chiara2024   (Chiara Martini)")
+print("    davide@scuola.it  /  davide2024   (Davide Romano)")
+print("    elena@scuola.it   /  elena2024    (Elena Conti)")
+print("    marco@scuola.it   /  marco2024    (Marco Esposito)")
+print()
+print("  STANZE: 20 (Regesta:6 | Scuola:6 | Biblioteca:4 | Altro:4)")
