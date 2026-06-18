@@ -29,7 +29,7 @@ pip install -r requirements.txt
 python seed.py
 
 # 2. Avvia il server
-uvicorn main:app --reload --port 8000
+python -m uvicorn main:app --reload --port 8000
 ```
 
 Apri il browser su: **http://localhost:8000**
@@ -38,7 +38,6 @@ Apri il browser su: **http://localhost:8000**
 
 | Email                  | Password   | Ruolo |
 |------------------------|------------|-------|
-| admin@scuola.it        | admin123   | Admin |
 | mario@scuola.it        | mario123   | User  |
 | giulia@scuola.it       | giulia123  | User  |
 
@@ -88,4 +87,4 @@ Apri il browser su: **http://localhost:8000**
 ## Documentazione interattiva
 
 Con il server avviato:  
-**http://localhost:8000/docs** (Swagger UI)
+**http://localhost:8000/** (Swagger UI)
