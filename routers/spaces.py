@@ -1,132 +1,132 @@
-# File modificato: regesta/routers/spaces.py
-from fastapi import APIRouter, HTTPException
-from config import load_db, save_db
-from models import SpaceCreate
+"""
+routers/spaces.py — Gestione spazi/aule (CRUD + toggle stato).
+"""
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from pydantic import BaseModel
+from typing import Optional
 
-router = APIRouter(prefix="/api/spaces", tags=["Spaces"])
+from database import get_db, Space
+
+router = APIRouter(prefix="/api/spaces", tags=["spaces"])
+
+
+class SpaceCreate(BaseModel):
+    name: str
+    capacity: int
+    equipment: Optional[str] = ""
+    location: Optional[str] = "Regesta"
+
+class SpaceUpdate(BaseModel):
+    name: str
+    capacity: int
+    equipment: Optional[str] = ""
+    location: Optional[str] = "Regesta"
+
 
 @router.get("")
-def get_spaces(capacity: int = 0, name: str = "", location: str = ""):
-    data = load_db()
-    # Filtra sia sulla capienza minima che sulla corrispondenza parziale del nome e luogo
-    return [
-        s for s in data["spaces"] 
-        if s.get("active", True)
-        and s["capacity"] >= capacity 
-        and (name.lower() in s["name"].lower() if name else True)
-        and (location.lower() == s.get("location", "").lower() if location else True)
-    ]
+def list_active_spaces(
+    name: Optional[str] = None,
+    location: Optional[str] = None,
+    equipment: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    """Restituisce gli spazi attivi, con filtri opzionali."""
+    q = db.query(Space).filter(Space.active == True)
+    if name:
+        q = q.filter(Space.name.ilike(f"%{name}%"))
+    if location:
+        q = q.filter(Space.location == location)
+    spaces = q.all()
+    if equipment:
+        eq_lower = equipment.lower()
+        spaces = [
+            s for s in spaces
+            if any(eq_lower in part.strip().lower() for part in (s.equipment or "").split(","))
+        ]
+    return [_serialize(s) for s in spaces]
+
 
 @router.get("/all-admin")
-def get_all_spaces_admin():
-    data = load_db()
-    return data["spaces"]
+def list_all_spaces(db: Session = Depends(get_db)):
+    """Admin: restituisce tutti gli spazi (attivi e non)."""
+    return [_serialize(s) for s in db.query(Space).all()]
+
 
 @router.post("")
-def create_space(space_data: SpaceCreate):
-    if not (1 <= space_data.capacity <= 40):
-        raise HTTPException(status_code=400, detail="La capienza deve essere compresa tra 1 e 40 persone.")
-        
-    data = load_db()
-    # Controllo univocità del nome nel luogo selezionato
-    if any(s["name"].lower() == space_data.name.lower() and s.get("location", "").lower() == space_data.location.lower() for s in data["spaces"]):
-        raise HTTPException(status_code=400, detail="Esiste già uno spazio con questo nome in questa sede.")
+def create_space(data: SpaceCreate, db: Session = Depends(get_db)):
+    if data.capacity < 1 or data.capacity > 40:
+        raise HTTPException(status_code=400, detail="Capienza deve essere tra 1 e 40.")
+    space = Space(**data.model_dump())
+    db.add(space)
+    db.commit()
+    db.refresh(space)
+    return _serialize(space)
 
-    new_id = max([s["id"] for s in data["spaces"]], default=0) + 1
-    new_space = {
-        "id": new_id,
-        "name": space_data.name,
-        "capacity": space_data.capacity,
-        "equipment": space_data.equipment,
-        "location": space_data.location,
-        "active": True
-    }
-    data["spaces"].append(new_space)
-    save_db(data)
-    return {"message": "Spazio creato con successo", "space": new_space}
 
-@router.put("/{id}")
-def update_space(id: int, space_data: SpaceCreate):
-    if not (1 <= space_data.capacity <= 40):
-        raise HTTPException(status_code=400, detail="La capienza deve essere compresa tra 1 e 40 persone.")
-    
-    data = load_db()
-    space = next((s for s in data["spaces"] if s["id"] == id), None)
+@router.put("/{space_id}")
+def update_space(space_id: int, data: SpaceUpdate, db: Session = Depends(get_db)):
+    space = db.query(Space).filter(Space.id == space_id).first()
     if not space:
         raise HTTPException(status_code=404, detail="Spazio non trovato.")
-        
-    # Controllo univocità del nome nello stesso luogo (escludendo se stesso)
-    if any(s["name"].lower() == space_data.name.lower() and s.get("location", "").lower() == space_data.location.lower() and s["id"] != id for s in data["spaces"]):
-        raise HTTPException(status_code=400, detail="Esiste già un altro spazio con questo nome in questa sede.")
-        
-    space["name"] = space_data.name
-    space["capacity"] = space_data.capacity
-    space["equipment"] = space_data.equipment
-    space["location"] = space_data.location
-    save_db(data)
-    return {"message": "Spazio aggiornato con successo", "space": space}
+    space.name      = data.name
+    space.capacity  = data.capacity
+    space.equipment = data.equipment
+    space.location  = data.location
+    db.commit()
+    return _serialize(space)
 
-@router.delete("/{id}")
-def delete_space(id: int):
-    data = load_db()
-    space = next((s for s in data["spaces"] if s["id"] == id), None)
+
+@router.patch("/{space_id}/toggle")
+def toggle_space(space_id: int, db: Session = Depends(get_db)):
+    space = db.query(Space).filter(Space.id == space_id).first()
     if not space:
-        raise HTTPException(status_code=404, detail="Spazio non trovato")
-        
-    prenotazioni_da_cancellare = [b for b in data["bookings"] if b["space_id"] == id]
-    if prenotazioni_da_cancellare:
-        data["bookings"] = [b for b in data["bookings"] if b["space_id"] != id]
-        if "notifications" not in data:
-            data["notifications"] = []
-        for b in prenotazioni_da_cancellare:
-            data["notifications"].append({
-                "user": b["user"],
-                "message": f"ATTENZIONE: Lo spazio '{space['name']}' è stato eliminato dall'amministratore. La tua prenotazione in data {b['start_time']} è stata annullata."
-            })
-            
-    data["spaces"] = [s for s in data["spaces"] if s["id"] != id]
-    save_db(data)
-    return {"message": f"Spazio '{space['name']}' eliminato definitivamente dal sistema."}
+        raise HTTPException(status_code=404, detail="Spazio non trovato.")
+    space.active = not space.active
+    db.commit()
+    stato = "attivato" if space.active else "messo in manutenzione"
+    return {"message": f"Spazio {stato}."}
 
-@router.patch("/{id}/toggle")
-def toggle_space(id: int):
-    data = load_db()
-    space = next((s for s in data["spaces"] if s["id"] == id), None)
+
+@router.delete("/{space_id}")
+def delete_space(space_id: int, db: Session = Depends(get_db)):
+    from database import Booking, Invitation, Notification
+    from datetime import datetime
+
+    space = db.query(Space).filter(Space.id == space_id).first()
     if not space:
-        raise HTTPException(status_code=404, detail="Spazio non trovato")
-    
-    if "active" not in space:
-        space["active"] = True
-    space["active"] = not space["active"]
+        raise HTTPException(status_code=404, detail="Spazio non trovato.")
 
-    if "notifications" not in data:
-        data["notifications"] = []
+    # Cancella prenotazioni future e notifica gli utenti
+    future_bookings = db.query(Booking).filter(
+        Booking.space_id == space_id,
+        Booking.start_time > datetime.utcnow()
+    ).all()
+    for b in future_bookings:
+        for inv in b.invitations:
+            db.add(Notification(
+                user=inv.username,
+                message=f"Lo spazio '{space.name}' è stato eliminato: la prenotazione #{b.id} è annullata."
+            ))
+        db.add(Notification(
+            user=b.user,
+            message=f"Lo spazio '{space.name}' è stato eliminato: la tua prenotazione #{b.id} è annullata."
+        ))
+        db.delete(b)
 
-    if space["active"]:
-        message = f"Spazio '{space['name']}' attivato con successo!"
-        for user in data["users"]:
-            data["notifications"].append({
-                "user": user["username"],
-                "message": f"Lo spazio '{space['name']}' è di nuovo disponibile."
-            })
-    else:
-        message = f"Spazio '{space['name']}' messo in manutenzione. "
-        for user in data["users"]:
-            data["notifications"].append({
-                "user": user["username"],
-                "message": f"Lo spazio '{space['name']}' è stato messo in manutenzione e non è più prenotabile."
-            })
-        prenotazioni_da_cancellare = [b for b in data["bookings"] if b["space_id"] == id]
+    db.delete(space)
+    db.commit()
+    return {"message": f"Spazio '{space.name}' eliminato."}
 
-        if prenotazioni_da_cancellare:
-            data["bookings"] = [b for b in data["bookings"] if b["space_id"] != id]
-            for b in prenotazioni_da_cancellare:
-                avviso = {
-                    "user": b["user"],
-                    "message": f"ATTENZIONE: La tua prenotazione per lo spazio '{space['name']}' in data {b['start_time']} è stata cancellata perché la stanza è stata messa in manutenzione dall'amministratore."
-                }
-                data["notifications"].append(avviso)
-            message += f" Cancellate {len(prenotazioni_da_cancellare)} prenotazioni attive. Gli utenti riceveranno un avviso al login."
 
-    save_db(data)
-    return {"message": message, "active": space["active"]}
+# ─── Helper ─────────────────────────────────────────────────────────────────
+
+def _serialize(s: Space) -> dict:
+    return {
+        "id":        s.id,
+        "name":      s.name,
+        "capacity":  s.capacity,
+        "equipment": s.equipment or "",
+        "location":  s.location or "Regesta",
+        "active":    s.active,
+    }

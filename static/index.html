@@ -65,7 +65,7 @@
             padding: 10px 14px;
         }
 
-        /* Footer that scrolls with the page (not fixed) */
+        /* Footer in fondo alla pagina, visibile solo scrollando fino in fondo */
         .site-footer {
             position: relative;
             width: 100%;
@@ -75,6 +75,7 @@
             text-align: center;
             font-size: 0.9rem;
             color: #333;
+            margin-top: auto;
         }
 
         /* Theme-specific footer colours */
@@ -137,22 +138,83 @@
             position: absolute;
             right: 0;
             top: 100%;
-            width: 320px;
-            max-height: 320px;
+            width: 360px;
+            max-height: 480px;
             overflow-y: auto;
             background: #ffffff;
-            border: 1px solid rgba(0,0,0,.15);
-            border-radius: 0.5rem;
+            border: 1px solid rgba(0,0,0,.12);
+            border-radius: 0.75rem;
             display: none;
-            padding: 0.75rem;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            padding: 0;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
             z-index: 1070;
         }
 
-        .notification-item {
+        #notifications-panel-header {
+            padding: 0.75rem 1rem 0.5rem;
+            border-bottom: 1px solid rgba(0,0,0,0.07);
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 2;
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+
+        #notifications-panel-body {
+            padding: 0.5rem 0.75rem;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        #notifications-panel-footer {
+            padding: 0.5rem 0.75rem;
+            border-top: 1px solid rgba(0,0,0,0.07);
             background: #f8f9fa;
-            border: 1px solid rgba(0,0,0,.08);
-            border-radius: 0.45rem;
+            border-radius: 0 0 0.75rem 0.75rem;
+        }
+
+        .notification-item {
+            background: #fff;
+            border: 1px solid rgba(0,0,0,.07);
+            border-left: 4px solid #6c757d;
+            border-radius: 0.5rem;
+            transition: background 0.15s;
+        }
+        .notification-item:hover { background: #f8f9ff; }
+        .notification-item.notif-unread {
+            background: #f0f4ff;
+            border-left-color: #4361ee;
+        }
+        .notification-item.notif-invite {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+        }
+        .notification-item.notif-invite.notif-unread {
+            background: #fef3c7;
+        }
+        .notification-item.notif-cancel {
+            border-left-color: #ef4444;
+            background: #fff5f5;
+        }
+        .notification-item.notif-warning {
+            border-left-color: #f97316;
+            background: #fff7ed;
+        }
+        .notification-item.notif-friend {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+        .notif-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #4361ee;
+            flex-shrink: 0;
+            margin-top: 5px;
+        }
+        .notif-time {
+            font-size: 10px;
+            color: #9ca3af;
+            margin-top: 2px;
         }
 
         #theme-panel {
@@ -175,6 +237,35 @@
             text-align: left;
         }
 
+        /* ── Mascot panel: always readable regardless of theme ─────────────── */
+        #mascot-panel .card {
+            background: #ffffff !important;
+            color: #212529 !important;
+        }
+        #mascot-panel .card .fw-bold { color: #1a1a2e !important; }
+        #mascot-panel .card .text-muted { color: rgba(33,37,41,0.65) !important; }
+        #mascot-panel .card #mascot-message { color: #333 !important; }
+        #mascot-panel .card .btn-outline-secondary { color: #495057 !important; border-color: #6c757d !important; }
+
+        /* Dark / Neon: invert to dark card + white text */
+        body.theme-dark  #mascot-panel .card,
+        body.theme-neon  #mascot-panel .card {
+            background: rgba(4,12,24,0.97) !important;
+            border-color: rgba(126,249,255,0.14) !important;
+            color: #e8f8ff !important;
+        }
+        body.theme-dark  #mascot-panel .card .fw-bold,
+        body.theme-neon  #mascot-panel .card .fw-bold,
+        body.theme-dark  #mascot-panel .card #mascot-message,
+        body.theme-neon  #mascot-panel .card #mascot-message { color: #e8f8ff !important; }
+        body.theme-dark  #mascot-panel .card .text-muted,
+        body.theme-neon  #mascot-panel .card .text-muted { color: rgba(220,245,255,0.6) !important; }
+        body.theme-dark  #mascot-panel .card .btn-outline-secondary,
+        body.theme-neon  #mascot-panel .card .btn-outline-secondary {
+            color: #b0e8ff !important;
+            border-color: rgba(176,232,255,0.45) !important;
+        }
+
         body.theme-light {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             color: #212529;
@@ -194,6 +285,7 @@
         /* Tutte le regole specifiche del tema scuro sono state eliminate per rispettare la richiesta dell'utente. */
         /* Background uniformity fix: force full-viewport non-repeating backgrounds to avoid visual seams/artifacts */
         html, body { height: 100%; min-height: 100%; margin: 0; padding: 0; }
+        /* nessun padding-bottom extra necessario */
         body, body::before, body::after {
             background-repeat: no-repeat !important;
             background-size: cover !important;
@@ -512,6 +604,24 @@
             color: #effcff;
             border-color: rgba(126,249,255,0.08);
         }
+
+        /* ── Neon: Registro Globale → barre nere con testo bianco ─────────── */
+        body.theme-neon #admin-global-bookings-list .list-group-item {
+            background: #000000 !important;
+            color: #ffffff !important;
+            border-color: rgba(126,249,255,0.12) !important;
+        }
+        body.theme-neon #admin-global-bookings-list .fw-bold,
+        body.theme-neon #admin-global-bookings-list .text-dark,
+        body.theme-neon #admin-global-bookings-list .text-muted,
+        body.theme-neon #admin-global-bookings-list small,
+        body.theme-neon #admin-global-bookings-list strong {
+            color: #ffffff !important;
+        }
+        body.theme-neon #admin-global-bookings-list .text-muted {
+            color: rgba(255,255,255,0.65) !important;
+        }
+
         body.theme-neon #admin-panel .btn-danger {
             background: linear-gradient(90deg, #ff5ad6, #9b7bff);
             border: none;
@@ -661,7 +771,23 @@
         /* Stili per i bordi richiesti dallo schema */
         .border-riquadro-rosso { border: 2.5px solid #dc3545 !important; }
         .border-riquadro-azzurro { border: 2.5px solid #007bff !important; }
-        
+
+        /* ── Timeline "Linea Temporale Giornaliera": testo adattivo per tema ── */
+        /* Neon/Dark: container scuro → testo orario bianco nei slot liberi */
+        body.theme-neon #daily-timeline-container .timeline-slot span.fw-bold,
+        body.theme-dark  #daily-timeline-container .timeline-slot span.fw-bold {
+            color: #e8f8ff !important;
+        }
+        /* Se lo slot è occupato (ha bg-light = sfondo chiaro) → testo scuro */
+        body.theme-neon #daily-timeline-container .timeline-slot.bg-light span.fw-bold,
+        body.theme-dark  #daily-timeline-container .timeline-slot.bg-light span.fw-bold {
+            color: #111 !important;
+        }
+        /* Tutti gli altri temi con sfondo chiaro: testo scuro (default già ok) */
+        #daily-timeline-container .timeline-slot span.fw-bold {
+            color: inherit;
+        }
+
         /* Timeline slots style */
         .timeline-slot {
             display: flex;
@@ -692,19 +818,206 @@
             display: none;
             gap: 6px;
             align-items: center;
+            position: relative;
         }
 
-        /* Allow chat card to float when requested (kept under the top navbar) */
-        #chat-card.floating {
+        #nav-chat-unread {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            font-size: 0.65rem;
+            min-width: 18px;
+            line-height: 1.4;
+            display: none;
+            padding: 0 4px;
+        }
+
+        /* Modern floating chat panel */
+        #chat-card {
             position: fixed !important;
             right: 20px;
-            bottom: 90px;
-            width: 380px;
-            max-height: 70vh;
-            overflow: auto;
-            z-index: 900 !important; /* lower than navbar to scroll under it */
-            display: block !important;
+            bottom: 20px;
+            width: 760px;
+            height: 540px;
+            border-radius: 16px !important;
+            overflow: hidden;
+            z-index: 900;
+            padding: 0 !important;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.1) !important;
+            display: none;
+            flex-direction: row;
         }
+
+        #chat-card.floating {
+            display: flex !important;
+        }
+
+        /* Chat sidebar */
+        #chat-sidebar {
+            width: 240px;
+            min-width: 240px;
+            border-right: 1px solid rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            background: #f7f8fa;
+        }
+
+        #chat-sidebar-header {
+            padding: 14px 14px 10px;
+            border-bottom: 1px solid rgba(0,0,0,0.07);
+            background: #fff;
+        }
+
+        #conversations-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .conv-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            transition: background 0.12s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 3px solid transparent;
+            text-decoration: none;
+        }
+        .conv-item:hover { background: #edf0f8; }
+        .conv-item.active { background: #dce8ff; border-left-color: #4361ee; }
+
+        .conv-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #fff;
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+
+        .conv-info { flex: 1; min-width: 0; }
+        .conv-name { font-size: 0.82rem; font-weight: 600; color: #1a1a2e; }
+        .conv-last { font-size: 0.72rem; color: #8a8fa8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
+
+        /* Chat main area */
+        #chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        #chat-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fff;
+            min-height: 58px;
+        }
+
+        #chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+            background: #f0f4ff;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .msg-row { display: flex; flex-direction: column; }
+        .msg-row.mine { align-items: flex-end; }
+        .msg-row.theirs { align-items: flex-start; }
+
+        .msg-bubble {
+            max-width: 72%;
+            padding: 8px 14px;
+            border-radius: 18px;
+            font-size: 0.875rem;
+            line-height: 1.45;
+            word-break: break-word;
+        }
+
+        .msg-row.mine .msg-bubble {
+            background: #4361ee;
+            color: #fff;
+            border-radius: 18px 18px 4px 18px;
+        }
+
+        .msg-row.theirs .msg-bubble {
+            background: #fff;
+            color: #212529;
+            border-radius: 18px 18px 18px 4px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.09);
+        }
+
+        .msg-time {
+            font-size: 10px;
+            margin-top: 3px;
+            padding: 0 4px;
+        }
+        .msg-row.mine .msg-time { color: rgba(67,97,238,0.6); text-align: right; }
+        .msg-row.theirs .msg-time { color: #9ca3af; }
+
+        .msg-sender-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: #4361ee;
+            margin-bottom: 2px;
+            padding: 0 4px;
+        }
+
+        #chat-input-area {
+            padding: 10px 14px;
+            border-top: 1px solid rgba(0,0,0,0.08);
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: #fff;
+        }
+
+        #chat-input {
+            flex: 1;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 24px;
+            padding: 9px 16px;
+            outline: none;
+            font-size: 0.875rem;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            background: #f8f9fa;
+        }
+
+        #chat-input:focus {
+            border-color: #4361ee;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(67,97,238,0.12);
+        }
+
+        #chat-send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #4361ee;
+            border: none;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.15s, transform 0.1s;
+        }
+        #chat-send-btn:hover { background: #3651d4; transform: scale(1.06); }
+        #chat-send-btn:active { transform: scale(0.95); }
 
         /* Lock page scroll while on login */
         .login-locked { overflow: hidden !important; height: 100vh !important; }
@@ -798,7 +1111,15 @@
                 <input type="email" id="username-input" class="form-control form-control-lg" placeholder="Indirizzo email" required onkeydown="if(event.key === 'Enter') login()">
             </div>
             <div class="mb-4">
-                <input type="password" id="password-input" class="form-control form-control-lg" placeholder="Inserisci la password" required onkeydown="if(event.key === 'Enter') login()">
+                <div class="input-group input-group-lg">
+                    <input type="password" id="password-input" class="form-control form-control-lg" placeholder="Inserisci la password" required onkeydown="if(event.key === 'Enter') login()">
+                    <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('password-input', this)" tabindex="-1" title="Mostra/nascondi password" style="border-left:0;">
+                        <svg id="eye-icon-password-input" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                        </svg>
+                    </button>
+                </div>
                 <div class="mt-2 text-start">
                     <a href="#" onclick="openResetModal(event)" class="text-decoration-none small fw-semibold">Hai dimenticato la password?</a>
                 </div>
@@ -845,25 +1166,37 @@
                         <span id="notification-badge" class="badge bg-danger rounded-pill" style="display:none;">0</span>
                     </button>
                     <div id="notifications-panel">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <div class="fw-bold text-dark">Notifiche</div>
-                            <button type="button" class="btn btn-link btn-sm p-0" onclick="toggleSelectAllNotifications()">Seleziona tutte</button>
+                        <div id="notifications-panel-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="fw-bold text-dark d-flex align-items-center gap-2">
+                                    <span>📬</span> Notifiche
+                                    <span id="notif-unread-badge" class="badge rounded-pill" style="background:#4361ee; font-size:0.65rem; display:none;">0</span>
+                                </div>
+                                <button type="button" class="btn btn-link btn-sm p-0 text-muted" style="font-size:11px;" onclick="toggleSelectAllNotifications()">Seleziona tutte</button>
+                            </div>
                         </div>
-                        <div id="notifications-list" class="mb-2"></div>
-                        <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary w-50" onclick="markNotificationsRead()">Segna come lette</button>
-                            <button type="button" class="btn btn-sm btn-outline-danger w-50" onclick="deleteSelectedNotifications()">Elimina</button>
+                        <div id="notifications-panel-body">
+                            <div id="notifications-list"></div>
+                        </div>
+                        <div id="notifications-panel-footer">
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary flex-grow-1" onclick="markNotificationsRead()" style="font-size:12px;">✓ Segna lette</button>
+                                <button type="button" class="btn btn-sm btn-outline-danger flex-grow-1" onclick="deleteSelectedNotifications()" style="font-size:12px;">🗑 Elimina</button>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <button class="btn btn-sm btn-outline-light me-3" onclick="goHomepage()" title="Torna alla home">🏠 Home</button>
-                <button id="nav-chat-btn" class="btn btn-sm btn-outline-light me-3 d-flex align-items-center" onclick="openChatLarge()" title="Apri chat" style="gap:6px;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="#7ef9ff" opacity="0.95"/>
-                        <path d="M7 10h10M7 13h6" stroke="#01161a" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <span class="d-none d-md-inline">Chat</span>
-                </button>
+                <div id="nav-chat-btn" class="me-3 position-relative" style="display:none;">
+                    <button class="btn btn-sm btn-outline-light d-flex align-items-center" onclick="openChatLarge()" title="Apri chat" style="gap:6px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="#7ef9ff" opacity="0.95"/>
+                            <path d="M7 10h10M7 13h6" stroke="#01161a" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="d-none d-md-inline">Chat</span>
+                    </button>
+                    <span id="nav-chat-unread" class="badge bg-danger rounded-pill" style="position:absolute;top:-6px;right:-6px;font-size:0.65rem;min-width:18px;display:none;"></span>
+                </div>
                 <span id="user-display" class="navbar-text text-white fw-bold me-3" onclick="openUserProfile()" style="cursor:pointer; text-decoration: underline;" title="Apri profilo"></span>
                 <div id="nav-mascot" class="me-2 position-relative">
                     <button type="button" onclick="toggleMascotPanel()" class="btn btn-outline-light btn-sm position-relative" title="Apri Pinguino Guida">
@@ -878,7 +1211,7 @@
                                     <div class="small text-muted">Il tuo compagno di pausa</div>
                                 </div>
                             </div>
-                            <div id="mascot-message" class="small text-dark mb-3">Ciao! Vuoi un consiglio o una battuta?</div>
+                            <div id="mascot-message" class="small mb-3">Ciao! Vuoi un consiglio o una battuta?</div>
                             <div class="d-flex gap-2">
                                 <button class="btn btn-sm btn-primary flex-grow-1" onclick="mascotNext()">Altro</button>
                                 <button class="btn btn-sm btn-outline-secondary" onclick="mascotRemindLater(30)">Ricordami 30m</button>
@@ -1157,25 +1490,39 @@
     
     <!-- Chat button moved to navbar (top-right). -->
 
-    <!-- Global floating chat panel (hidden until opened) -->
-    <div id="chat-card" class="card p-3 shadow-sm" style="display:none; width:360px;">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <h6 class="fw-bold mb-0">Chat con utenti</h6>
-            <div>
-                <button class="btn btn-sm btn-outline-secondary me-1" onclick="closeFloatingChat()">Chiudi</button>
-            </div>
-        </div>
-        <div class="d-flex" style="gap:12px;">
-            <div style="width:40%; max-width:140px;">
-                <div id="conversations-list" class="list-group small" style="max-height:280px; overflow:auto;"></div>
-            </div>
-            <div style="flex:1;">
-                <div id="chat-with" class="mb-2 small text-muted">Seleziona una conversazione</div>
-                <div id="chat-messages" style="height:200px; overflow:auto; background:#fff; border:1px solid #dee2e6; padding:8px; border-radius:6px;" class="mb-2"></div>
-                <div class="input-group input-group-sm">
-                    <input type="text" id="chat-input" class="form-control" placeholder="Scrivi un messaggio...">
-                    <button class="btn btn-primary" onclick="sendChatMessage()">Invia</button>
+    <!-- Global floating chat panel -->
+    <div id="chat-card" class="card shadow-lg">
+        <!-- Sidebar: user list -->
+        <div id="chat-sidebar">
+            <div id="chat-sidebar-header">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="fw-bold" style="font-size:0.95rem; color:#1a1a2e;">💬 Messaggi</div>
+                    <button onclick="closeFloatingChat()" title="Chiudi" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:#8a8fa8;line-height:1;padding:2px 6px;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#8a8fa8'">✕</button>
                 </div>
+            </div>
+            <div id="conversations-list"></div>
+        </div>
+        <!-- Main chat area -->
+        <div id="chat-main">
+            <div id="chat-header">
+                <div id="chat-header-info" class="d-flex align-items-center gap-2">
+                    <div class="text-muted small" style="color:#9ca3af;">← Seleziona una conversazione</div>
+                </div>
+            </div>
+            <div id="chat-messages">
+                <div id="chat-empty-state" class="d-flex flex-column align-items-center justify-content-center h-100" style="opacity:0.45; pointer-events:none;">
+                    <div style="font-size:3rem;">💬</div>
+                    <div class="small text-muted mt-2">Nessuna conversazione aperta</div>
+                </div>
+            </div>
+            <div id="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Scrivi un messaggio…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMessage();}">
+                <button id="chat-send-btn" onclick="sendChatMessage()" title="Invia (Invio)">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 2L11 13" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
             </div>
         </div>
     </div>
@@ -1442,6 +1789,20 @@
             .catch(err => console.error('Errore caricamento dotazioni:', err));
         }
 
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const isHidden = input.type === 'password';
+            input.type = isHidden ? 'text' : 'password';
+            const svg = btn.querySelector('svg');
+            if (svg) {
+                // Occhio aperto (visibile) vs occhio sbarrato (nascosto)
+                svg.innerHTML = isHidden
+                    ? '<path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.944 5.944 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.709z"/><path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z"/><path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709z"/><path fill-rule="evenodd" d="M13.646 14.354l-12-12 .708-.708 12 12-.708.708z"/>'
+                    : '<path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>';
+            }
+        }
+
         window.addEventListener('DOMContentLoaded', initializeApp);
 
         function goHomepage() {
@@ -1666,25 +2027,69 @@
             }
         }
 
+        function _notifCategory(msg) {
+            if (msg.includes('📬') || msg.includes('invitato')) return 'invite';
+            if (msg.includes('❌') || msg.includes('cancellata') || msg.includes('CANCELLAZIONE')) return 'cancel';
+            if (msg.includes('⚠️') || msg.includes('ADMIN')) return 'warning';
+            if (msg.includes('amicizia') || msg.includes('amico')) return 'friend';
+            return 'default';
+        }
+
+        function _notifTimeAgo(createdStr) {
+            try {
+                const d = new Date(createdStr);
+                if (isNaN(d)) return '';
+                const diff = Math.floor((Date.now() - d.getTime()) / 1000);
+                if (diff < 60) return 'Adesso';
+                if (diff < 3600) return `${Math.floor(diff/60)} min fa`;
+                if (diff < 86400) return `${Math.floor(diff/3600)} ore fa`;
+                return d.toLocaleDateString('it-IT', {day:'2-digit', month:'short'});
+            } catch(e) { return ''; }
+        }
+
         function renderNotificationsList() {
             const listEl = document.getElementById('notifications-list');
             if (!listEl) return;
             listEl.innerHTML = "";
+            const unreadBadge = document.getElementById('notif-unread-badge');
+            const unreadCount = notifications.filter(n => !n.read).length;
+            if (unreadBadge) {
+                unreadBadge.textContent = unreadCount;
+                unreadBadge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
+            }
             if (notifications.length === 0) {
-                listEl.innerHTML = '<p class="text-muted small mb-0">Nessuna notifica recente.</p>';
+                listEl.innerHTML = `
+                    <div class="text-center py-4">
+                        <div style="font-size:2rem; opacity:0.4;">📭</div>
+                        <p class="text-muted small mb-0 mt-1">Nessuna notifica recente</p>
+                    </div>`;
                 return;
             }
             selectedNotifications.clear();
             notifications.forEach(n => {
+                const cat = _notifCategory(n.message);
+                const catClasses = {
+                    invite: 'notif-invite',
+                    cancel: 'notif-cancel',
+                    warning: 'notif-warning',
+                    friend: 'notif-friend',
+                    default: ''
+                };
                 const item = document.createElement('div');
-                item.className = 'notification-item p-2 mb-2 d-flex align-items-start gap-2';
+                const unreadClass = !n.read ? ' notif-unread' : '';
+                item.className = `notification-item p-2 mb-2 d-flex align-items-start gap-2 ${catClasses[cat]}${unreadClass}`;
+                const timeAgo = _notifTimeAgo(n.created);
                 item.innerHTML = `
-                    <div class="form-check mt-1">
+                    <div class="form-check mt-1 flex-shrink-0">
                         <input class="form-check-input" type="checkbox" id="notif-${n.id}" data-id="${n.id}">
                     </div>
-                    <div class="flex-grow-1">
-                        <div class="small text-dark${n.read ? '' : ' fw-semibold'}">${n.message}</div>
-                        <div class="small text-muted">${n.read ? 'Letta' : 'Nuova'}</div>
+                    ${!n.read ? '<div class="notif-dot flex-shrink-0"></div>' : '<div style="width:8px;flex-shrink:0;"></div>'}
+                    <div class="flex-grow-1 overflow-hidden">
+                        <div class="small text-dark${!n.read ? ' fw-semibold' : ''}" style="line-height:1.4;">${n.message}</div>
+                        <div class="d-flex align-items-center gap-2 mt-1">
+                            <span class="notif-time">${timeAgo}</span>
+                            ${!n.read ? '<span class="badge rounded-pill" style="background:#4361ee; font-size:9px; padding:2px 6px;">Nuova</span>' : '<span class="badge rounded-pill bg-secondary" style="font-size:9px; padding:2px 6px; opacity:0.5;">Letta</span>'}
+                        </div>
                     </div>
                 `;
                 const checkbox = item.querySelector('input[type=checkbox]');
@@ -1718,12 +2123,20 @@
 
         function markNotificationsRead() {
             if (!currentUser || notifications.length === 0) return;
-            fetch(`/api/auth/notifications/read?user=${encodeURIComponent(currentUser)}`, {
-                method: 'PUT'
+            const ids = selectedNotifications.size > 0
+                ? Array.from(selectedNotifications)
+                : notifications.map(n => n.id);
+            fetch('/api/auth/notifications/mark-read', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ user: currentUser, ids: ids })
             })
             .then(res => res.json())
             .then(() => {
-                notifications = notifications.map(n => ({ ...n, read: true }));
+                notifications = notifications.map(n =>
+                    ids.includes(n.id) ? { ...n, read: true } : n
+                );
+                selectedNotifications.clear();
                 renderNotificationBadge();
                 renderNotificationsList();
             })
@@ -1736,14 +2149,16 @@
             if (!currentUser || selectedNotifications.size === 0) {
                 return alert('Seleziona una o più notifiche da eliminare.');
             }
-            const deletePromises = Array.from(selectedNotifications).map(id => {
-                return fetch(`/api/auth/notifications/${id}?user=${encodeURIComponent(currentUser)}`, {
-                    method: 'DELETE'
-                }).then(res => {
-                    if (!res.ok) return res.json().then(err => { throw new Error(err.detail); });
-                });
-            });
-            Promise.all(deletePromises)
+            const ids = Array.from(selectedNotifications);
+            fetch('/api/auth/notifications', {
+                method: 'DELETE',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ ids: ids })
+            })
+            .then(res => {
+                if (!res.ok) return res.json().then(err => { throw new Error(err.detail); });
+                return res.json();
+            })
             .then(() => {
                 notifications = notifications.filter(n => !selectedNotifications.has(n.id));
                 selectedNotifications.clear();
@@ -1776,7 +2191,7 @@
 
         // VERIFICA INVITI RICEVUTI ALL'ACCESSO
         function checkInvitations(user) {
-            fetch(`/api/bookings/invitations?user=${user}`)
+            fetch(`/api/auth/invitations?user=${encodeURIComponent(user)}`)
             .then(res => res.json())
             .then(invitations => {
                 pendingInvitations = invitations;
@@ -1825,15 +2240,26 @@
 
         function submitInvitationResponse(status) {
             const inv = pendingInvitations[currentInviteIndex];
-            fetch(`/api/bookings/invitations/${inv.booking_id}/respond?user=${currentUser}&status=${status}`, {
-                method: 'POST'
+            fetch('/api/auth/invitations/respond', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ invitation_id: inv.invitation_id, status: status })
             })
             .then(res => res.json())
             .then(data => {
-                alert(data.message);
-                document.getElementById('invitation-prompt-box').remove();
+                const box = document.getElementById('invitation-prompt-box');
+                if (box) box.remove();
                 currentInviteIndex++;
+                if (status === 'accepted') {
+                    loadMyBookings();
+                }
+                // Mostra breve toast di conferma
+                const msg = status === 'accepted' ? '✅ Invito accettato! La prenotazione è ora visibile nelle tue prenotazioni.' : '❌ Invito declinato.';
+                customAlert(msg);
                 presentNextInvitation();
+            })
+            .catch(() => {
+                customAlert('Errore durante la risposta all\'invito. Riprova.');
             });
         }
 
@@ -2179,17 +2605,39 @@
                     const invites = (b.invitations || []).map(inv => `${inv.username}${inv.status ? ' ('+inv.status+')' : ''}`).join(', ');
                     list.innerHTML += `
                         <div class="list-group-item d-flex justify-content-between align-items-center p-2 mb-1 border-0 border-bottom bg-light">
-                            <div>
+                            <div class="flex-grow-1">
                                 <span class="fw-bold text-dark">${b.space_name}</span> 
                                 <span class="badge bg-primary ms-2">Utente: ${b.user}</span>
                                 <div class="small text-muted mt-1">Periodo d'uso: <strong>${b.start_time}</strong> fino a <strong>${b.end_time}</strong></div>
                                 ${invites ? `<div class="small text-muted mt-1">Invitati: ${invites}</div>` : ''}
                             </div>
-                            <span class="text-muted small">ID Prenotazione: #${b.id}</span>
+                            <div class="d-flex align-items-center gap-2 ms-2 flex-shrink-0">
+                                <button onclick="adminCancelBooking(${b.id}, '${b.user.replace(/'/g,"\\'")}', '${b.space_name.replace(/'/g,"\\'")}', '${b.start_time}')" 
+                                    class="btn btn-danger btn-sm px-2 py-1 fw-semibold" 
+                                    style="font-size:11px; white-space:nowrap;">
+                                    🗑 Disdici
+                                </button>
+                                <span class="text-muted small" style="white-space:nowrap;">ID: #${b.id}</span>
+                            </div>
                         </div>
                     `;
                 });
             });
+        }
+
+        function adminCancelBooking(bookingId, bookingOwner, spaceName, startTime) {
+            if(!confirm(`Sei sicuro di voler cancellare la prenotazione #${bookingId} di ${bookingOwner} per '${spaceName}' (${startTime})?\n\nL'utente verrà notificato.`)) return;
+            fetch(`/api/bookings/${bookingId}?user=${encodeURIComponent(currentUser)}`, { method: 'DELETE' })
+            .then(res => {
+                if(!res.ok) return res.json().then(err => { throw new Error(err.detail) });
+                return res.json();
+            })
+            .then(data => {
+                customAlert('✅ ' + data.message + `\nL'utente ${bookingOwner} è stato notificato.`);
+                loadGlobalBookings();
+                if(selectedSpaceId) updateTimelineData();
+            })
+            .catch(err => customAlert("❌ Errore: " + err.message));
         }
 
         function cancelBooking(bookingId) {
@@ -2276,34 +2724,115 @@
         // --- Chat functions ---
         let currentChatWith = null;
 
+        // Genera un colore avatar deterministico dall'username
+        function _avatarColor(username) {
+            const palette = ['#4361ee','#7209b7','#f72585','#4cc9f0','#3a0ca3','#480ca8','#b5179e','#06d6a0','#ef476f','#ffd166'];
+            let h = 0;
+            for (let i = 0; i < username.length; i++) h = (h * 31 + username.charCodeAt(i)) & 0xffffffff;
+            return palette[Math.abs(h) % palette.length];
+        }
+
+        function _msgTimeFormat(ts) {
+            try {
+                const d = new Date(ts);
+                const now = new Date();
+                const diffDays = Math.floor((now - d) / 86400000);
+                if (diffDays === 0) return d.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
+                if (diffDays === 1) return 'Ieri ' + d.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
+                return d.toLocaleDateString('it-IT', {day:'2-digit', month:'short'}) + ' ' + d.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
+            } catch(e) { return ''; }
+        }
+
+        function updateChatNavBadge(convList) {
+            const badge = document.getElementById('nav-chat-unread');
+            if (!badge) return;
+            const total = (convList || []).reduce((s, c) => s + (c.unread || 0), 0);
+            if (total > 0) {
+                badge.textContent = total > 99 ? '99+' : total;
+                badge.style.display = 'inline-block';
+                badge.className = 'badge bg-danger rounded-pill';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
         function loadConversations() {
             if (!currentUser) return;
-            fetch(`/api/auth/conversations?user=${encodeURIComponent(currentUser)}`)
-            .then(res => res.json())
-            .then(list => {
+            Promise.all([
+                fetch('/api/auth/users').then(r => r.json()),
+                fetch(`/api/auth/conversations?user=${encodeURIComponent(currentUser)}`).then(r => r.json())
+            ]).then(([allUsers, convList]) => {
+                updateChatNavBadge(convList);
                 const el = document.getElementById('conversations-list');
                 el.innerHTML = '';
-                if (!list || list.length === 0) {
-                    el.innerHTML = '<div class="small text-muted p-2">Nessuna conversazione</div>';
+                const convMap = {};
+                (convList || []).forEach(c => { convMap[c.user] = c; });
+                const others = (allUsers || []).filter(u => u.username !== currentUser);
+                if (others.length === 0) {
+                    el.innerHTML = '<div class="small text-muted p-3 text-center" style="color:#9ca3af;">Nessun altro utente registrato</div>';
                     return;
                 }
-                list.forEach(c => {
-                    el.innerHTML += `<button class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" onclick="openConversation('${c.user}')">`+
-                        `<div><strong>${c.user}</strong><div class="small text-muted">${c.last || ''}</div></div>`+
-                        `${c.unread ? `<span class='badge bg-danger rounded-pill'>${c.unread}</span>` : ''}`+
-                        `</button>`;
+                // Sort: unread first, then those with conversations, then rest
+                others.sort((a, b) => {
+                    const au = (convMap[a.username] || {}).unread || 0;
+                    const bu = (convMap[b.username] || {}).unread || 0;
+                    if (bu !== au) return bu - au;
+                    const al = convMap[a.username] ? 1 : 0;
+                    const bl = convMap[b.username] ? 1 : 0;
+                    return bl - al;
                 });
+                others.forEach(u => {
+                    const c = convMap[u.username] || {};
+                    const display = u.display_name || u.username;
+                    const initial = display.charAt(0).toUpperCase();
+                    const avatarColor = _avatarColor(u.username);
+                    const isActive = currentChatWith === u.username ? ' active' : '';
+                    const unreadBadge = c.unread ? `<span class="badge bg-danger rounded-pill" style="font-size:10px;min-width:18px;">${c.unread}</span>` : '';
+                    const lastMsg = c.last ? `<div class="conv-last">${c.last}</div>` : '<div class="conv-last" style="color:#c4c9d8;">Inizia la conversazione</div>';
+                    el.innerHTML += `
+                        <div class="conv-item${isActive}" onclick="openConversation('${u.username.replace(/'/g,"\\'")}')">
+                            <div class="conv-avatar" style="background:${avatarColor};">${initial}</div>
+                            <div class="conv-info">
+                                <div class="conv-name">${display}</div>
+                                ${lastMsg}
+                            </div>
+                            ${unreadBadge}
+                        </div>`;
+                });
+            }).catch(() => {
+                const el = document.getElementById('conversations-list');
+                el.innerHTML = '<div class="small text-muted p-3" style="color:#9ca3af;">Errore caricamento</div>';
             });
         }
 
         function openConversation(withUser) {
             currentChatWith = withUser;
-            document.getElementById('chat-with').innerText = `Chat con ${withUser}`;
-            document.getElementById('chat-messages').innerHTML = '<div class="small text-muted">Caricamento...</div>';
+            // Aggiorna header
+            const headerInfo = document.getElementById('chat-header-info');
+            if (headerInfo) {
+                const initial = withUser.charAt(0).toUpperCase();
+                const color = _avatarColor(withUser);
+                headerInfo.innerHTML = `
+                    <div class="conv-avatar" style="background:${color}; width:34px; height:34px; font-size:0.8rem;">${initial}</div>
+                    <div>
+                        <div class="fw-semibold" style="font-size:0.9rem; color:#1a1a2e;">${withUser}</div>
+                        <div style="font-size:10px; color:#9ca3af;">Conversazione privata</div>
+                    </div>`;
+            }
+            // Mostra loading
+            const box = document.getElementById('chat-messages');
+            const emptyState = document.getElementById('chat-empty-state');
+            if (emptyState) emptyState.style.display = 'none';
+            box.innerHTML = '<div class="d-flex justify-content-center align-items-center h-100"><div class="spinner-border spinner-border-sm text-primary" style="opacity:0.5;"></div></div>';
             loadMessages(withUser);
-            // mark read after opening
+            // Aggiorna active class nella sidebar
+            document.querySelectorAll('.conv-item').forEach(el => {
+                el.classList.toggle('active', el.getAttribute('onclick') && el.getAttribute('onclick').includes(`'${withUser}'`));
+            });
+            // Segna come letti
             fetch('/api/auth/messages/read', {
-                method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ user: currentUser, with_user: withUser })
+                method: 'PUT', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ user: currentUser, with_user: withUser })
             }).then(() => loadConversations()).catch(()=>{});
         }
 
@@ -2314,82 +2843,87 @@
                 const box = document.getElementById('chat-messages');
                 box.innerHTML = '';
                 if (!msgs || msgs.length === 0) {
-                    box.innerHTML = '<div class="small text-muted">Nessun messaggio in questa conversazione.</div>';
+                    box.innerHTML = `
+                        <div class="d-flex flex-column align-items-center justify-content-center h-100" style="opacity:0.5;">
+                            <div style="font-size:2.5rem;">👋</div>
+                            <div class="small text-muted mt-2">Inizia la conversazione!</div>
+                        </div>`;
                     return;
                 }
+                let lastDate = null;
                 msgs.forEach(m => {
-                    const cls = m.from === currentUser ? 'text-end' : 'text-start';
-                    const bg = m.from === currentUser ? 'bg-primary text-white' : 'bg-light text-dark';
-                    const time = new Date(m.timestamp).toLocaleString();
-                    const node = document.createElement('div');
-                    node.className = `mb-2 p-2 rounded ${bg}`;
-                    node.style.clear = 'both';
-                    node.innerHTML = `<div class='small ${cls}'>${m.content}</div><div class='small text-muted ${cls}' style='font-size:0.7rem;'>${time}</div>`;
-                    box.appendChild(node);
+                    const isMine = m.from !== withUser;
+                    const msgDate = new Date(m.timestamp).toLocaleDateString('it-IT');
+                    // Separatore data
+                    if (msgDate !== lastDate) {
+                        lastDate = msgDate;
+                        const sep = document.createElement('div');
+                        sep.className = 'd-flex align-items-center gap-2 my-2';
+                        sep.innerHTML = `<div style="flex:1;height:1px;background:rgba(0,0,0,0.08);"></div><span style="font-size:10px;color:#9ca3af;white-space:nowrap;">${msgDate}</span><div style="flex:1;height:1px;background:rgba(0,0,0,0.08);"></div>`;
+                        box.appendChild(sep);
+                    }
+                    const row = document.createElement('div');
+                    row.className = `msg-row ${isMine ? 'mine' : 'theirs'}`;
+                    const timeStr = _msgTimeFormat(m.timestamp);
+                    row.innerHTML = `
+                        <div class="msg-bubble">${_escapeHtml(m.content)}</div>
+                        <div class="msg-time">${timeStr}</div>`;
+                    box.appendChild(row);
                 });
                 box.scrollTop = box.scrollHeight;
             });
+        }
+
+        function _escapeHtml(str) {
+            return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
         }
 
         function sendChatMessage() {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
             if (!text) return;
-            if (!currentChatWith) return alert('Seleziona prima una conversazione.');
+            if (!currentChatWith) {
+                input.placeholder = '← Prima seleziona un utente!';
+                setTimeout(() => { input.placeholder = 'Scrivi un messaggio…'; }, 2000);
+                return;
+            }
+            input.value = '';
+            input.focus();
             fetch('/api/auth/send-message', {
-                method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ from: currentUser, to: currentChatWith, content: text })
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ from: currentUser, to: currentChatWith, content: text })
             })
             .then(res => res.json())
             .then(() => {
-                input.value = '';
                 loadMessages(currentChatWith);
                 loadConversations();
             })
-            .catch(err => alert('Errore invio messaggio: ' + err.message));
+            .catch(() => {
+                input.value = text;
+                customAlert('❌ Errore invio messaggio. Riprova.');
+            });
         }
 
-        // optional: refresh conversations/messages when profile is open
+        // Auto-refresh messaggi e conversazioni quando la chat è aperta
         setInterval(() => {
-            if (document.getElementById('profile-section') && document.getElementById('profile-section').style.display === 'block') {
+            const chatCard = document.getElementById('chat-card');
+            if (chatCard && chatCard.classList.contains('floating')) {
                 loadConversations();
                 if (currentChatWith) loadMessages(currentChatWith);
             }
         }, 5000);
 
-        // Toggle floating chat display (moves the existing chat card into a floating position)
-        function toggleFloatingChat() {
-            const chatCard = document.getElementById('chat-card');
-            if (!chatCard) return alert('Chat non disponibile.');
-            if (chatCard.classList.contains('floating')) {
-                chatCard.classList.remove('floating');
-                // if profile was hidden, keep it hidden
-                chatCard.style.display = 'none';
-            } else {
-                chatCard.classList.add('floating');
-                chatCard.style.display = 'block';
-                // ensure conversations loaded
-                loadConversations();
-            }
-        }
-
         function closeFloatingChat() {
             const chatCard = document.getElementById('chat-card');
             if (!chatCard) return;
             chatCard.classList.remove('floating');
-            chatCard.style.display = 'none';
         }
 
         function openChatLarge() {
             const chatCard = document.getElementById('chat-card');
-            if (!chatCard) return alert('Chat non disponibile.');
-            // make it larger for navbar-triggered open
+            if (!chatCard) return;
             chatCard.classList.add('floating');
-            chatCard.style.display = 'block';
-            chatCard.style.width = '760px';
-            chatCard.style.maxHeight = '80vh';
-            chatCard.style.right = '20px';
-            chatCard.style.bottom = '60px';
-            // ensure conversations loaded
             loadConversations();
         }
 
@@ -2397,16 +2931,13 @@
         document.addEventListener('click', function(e) {
             try {
                 const chatCard = document.getElementById('chat-card');
-                if (!chatCard || chatCard.style.display === 'none') return;
+                if (!chatCard || !chatCard.classList.contains('floating')) return;
                 const navBtn = document.getElementById('nav-chat-btn');
                 const target = e.target;
-                if (chatCard.contains(target)) return; // click inside chat
-                if (navBtn && navBtn.contains(target)) return; // click on open button
-                // otherwise close
+                if (chatCard.contains(target)) return;
+                if (navBtn && navBtn.contains(target)) return;
                 closeFloatingChat();
-            } catch (err) {
-                console.error('Error handling outside click for chat:', err);
-            }
+            } catch (err) { /* ignore */ }
         });
 
         // Prompt and remove friend with security notification

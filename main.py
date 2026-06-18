@@ -1,19 +1,35 @@
+"""
+main.py — Entry point dell'applicazione FastAPI.
+
+Avvio:
+    uvicorn main:app --reload --port 8000
+"""
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from pathlib import Path
+
+from database import create_tables
 from routers import auth, spaces, bookings
-import os
 
-app = FastAPI(title="Gestione Spazi Comuni - API-First")
+# Crea le tabelle SQLite al primo avvio
+create_tables()
 
-# Inclusione dei router dei singoli microservizi
+app = FastAPI(title="Gestione Spazi Comuni", version="1.0.0")
+
+# ─── Router ─────────────────────────────────────────────────────────────────
 app.include_router(auth.router)
 app.include_router(spaces.router)
 app.include_router(bookings.router)
 
-@app.get("/", response_class=HTMLResponse)
-def read_index():
-    template_path = os.path.join("templates", "index.html")
-    if os.path.exists(template_path):
-        with open(template_path, "r", encoding="utf-8") as f:
-            return f.read()
-    return "<h3>File index.html non trovato nella cartella templates/</h3>"
+# ─── File statici (HTML, CSS, JS) ───────────────────────────────────────────
+STATIC_DIR = Path(__file__).parent / "static"
+STATIC_DIR.mkdir(exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+@app.get("/")
+def serve_index():
+    index_path = STATIC_DIR / "index.html"
+    if not index_path.exists():
+        return {"error": "index.html non trovato nella cartella static/"}
+    return FileResponse(str(index_path))

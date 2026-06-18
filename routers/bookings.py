@@ -1,192 +1,178 @@
-# File modificato: regesta/routers/bookings.py
-from fastapi import APIRouter, HTTPException
+"""
+routers/bookings.py — Prenotazioni spazi e gestione inviti.
+"""
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session
+from pydantic import BaseModel
+from typing import Optional, List
 from datetime import datetime, timedelta
-from typing import Optional
-from models import BookingCreate
-from config import load_db, save_db
 
-router = APIRouter(prefix="/api/bookings", tags=["Bookings"])
+from database import get_db, Booking, Space, Invitation, Notification
 
-def check_overlap(space_id: int, start: datetime, end: datetime, db_data, ignore_id: Optional[int] = None) -> bool:
-    for b in db_data["bookings"]:
-        if b["space_id"] == space_id and (ignore_id is None or b["id"] != ignore_id):
-            b_start = datetime.strptime(b["start_time"], "%Y-%m-%d %H:%M")
-            b_end = datetime.strptime(b["end_time"], "%Y-%m-%d %H:%M")
-            if max(start, b_start) < min(end, b_end):
-                return True
-    return False
+router = APIRouter(prefix="/api/bookings", tags=["bookings"])
+
+
+class BookingCreate(BaseModel):
+    space_id:       int
+    user:           str
+    start_time:     str          # "YYYY-MM-DD HH:MM"
+    duration_hours: int
+    invited_users:  Optional[List[str]] = []
+
+
+def _parse_dt(s: str) -> datetime:
+    for fmt in ("%Y-%m-%d %H:%M", "%Y-%m-%dT%H:%M"):
+        try:
+            return datetime.strptime(s, fmt)
+        except ValueError:
+            pass
+    raise HTTPException(status_code=400, detail=f"Formato data non valido: {s}")
+
+
+def _serialize_booking(b: Booking) -> dict:
+    return {
+        "id":          b.id,
+        "space_id":    b.space_id,
+        "space_name":  b.space.name if b.space else "?",
+        "user":        b.user,
+        "start_time":  b.start_time.strftime("%Y-%m-%d %H:%M"),
+        "end_time":    b.end_time.strftime("%Y-%m-%d %H:%M"),
+        "invitations": [
+            {"username": i.username, "status": i.status}
+            for i in b.invitations
+        ],
+    }
+
 
 @router.get("")
-def get_bookings(user: Optional[str] = None):
-    data = load_db()
+def list_bookings(
+    user: Optional[str] = Query(None),
+    space_id: Optional[int] = Query(None),
+    db: Session = Depends(get_db)
+):
+    """
+    Senza parametri → tutte le prenotazioni (admin).
+    ?user=X         → prenotazioni dell'utente X (owner + invitato accettato).
+    ?space_id=N     → prenotazioni per uno spazio (timeline).
+    """
+    q = db.query(Booking)
+    if space_id:
+        q = q.filter(Booking.space_id == space_id)
+
     if user:
-        user_bookings = []
-        for b in data["bookings"]:
-            # Mostra la prenotazione se l'utente è il proprietario o se ha accettato l'invito
-            if b["user"] == user:
-                user_bookings.append(b)
-            elif "invitations" in b:
-                if any(inv["username"] == user and inv["status"] == "accepted" for inv in b["invitations"]):
-                    user_bookings.append(b)
-        return user_bookings
-    return data["bookings"]
+        # prenotazioni come owner
+        own = q.filter(Booking.user == user).all()
+        # prenotazioni come invitato accettato
+        accepted_ids = [
+            inv.booking_id
+            for inv in db.query(Invitation).filter(
+                Invitation.username == user,
+                Invitation.status == "accepted"
+            ).all()
+        ]
+        guest = db.query(Booking).filter(Booking.id.in_(accepted_ids)).all()
+        seen = {b.id for b in own}
+        all_bookings = own + [b for b in guest if b.id not in seen]
+        return [_serialize_booking(b) for b in all_bookings]
+
+    return [_serialize_booking(b) for b in q.all()]
+
 
 @router.post("")
-def create_booking(booking: BookingCreate):
-    data = load_db()
-    space = next((s for s in data["spaces"] if s["id"] == booking.space_id and s["active"]), None)
+def create_booking(data: BookingCreate, db: Session = Depends(get_db)):
+    space = db.query(Space).filter(Space.id == data.space_id).first()
     if not space:
-        raise HTTPException(status_code=400, detail="Spazio non disponibile o in manutenzione.")
-    
-    if booking.duration_hours > 2:
-        raise HTTPException(status_code=400, detail="Policy Limit: Massimo 2 ore consecutive.")
-    
-    start_dt = datetime.strptime(booking.start_time, "%Y-%m-%d %H:%M")
-    end_dt = start_dt + timedelta(hours=booking.duration_hours)
-    
-    if check_overlap(booking.space_id, start_dt, end_dt, data):
-        raise HTTPException(status_code=400, detail="Conflitto: Slot già occupato.")
+        raise HTTPException(status_code=404, detail="Spazio non trovato.")
+    if not space.active:
+        raise HTTPException(status_code=400, detail="Lo spazio non è attualmente disponibile.")
 
-    max_invites = space["capacity"] - 1
-    if len([u for u in booking.invited_users if u.strip() and u.strip() != booking.user]) > max_invites:
-        raise HTTPException(status_code=400, detail=f"Numero massimo di invitati superato. Puoi invitare al massimo {max_invites} persone.")
-    
-    new_id = max([b["id"] for b in data["bookings"]], default=0) + 1
-    
-    # Costruzione struttura inviti pendenti
-    invitations_list = []
-    if booking.invited_users:
-        for u in booking.invited_users:
-            clean_user = u.strip()
-            if clean_user and clean_user != booking.user:
-                invitations_list.append({"username": clean_user, "status": "pending"})
+    start = _parse_dt(data.start_time)
+    end   = start + timedelta(hours=data.duration_hours)
+    now   = datetime.utcnow()
 
-    new_booking = {
-        "id": new_id, 
-        "space_id": booking.space_id, 
-        "space_name": space["name"],
-        "user": booking.user, 
-        "start_time": booking.start_time, 
-        "end_time": end_dt.strftime("%Y-%m-%d %H:%M"),
-        "invitations": invitations_list
-    }
-    data["bookings"].append(new_booking)
+    if start < now:
+        raise HTTPException(status_code=400, detail="Non puoi prenotare nel passato.")
 
-    if booking.invited_users:
-        if "notifications" not in data:
-            data["notifications"] = []
-        for u in booking.invited_users:
-            clean_user = u.strip()
-            if clean_user and clean_user != booking.user:
-                data["notifications"].append({
-                    "user": clean_user,
-                    "message": f"Sei stato invitato alla prenotazione dello spazio '{space['name']}' il {booking.start_time}."
-                })
+    # Verifica sovrapposizioni
+    conflict = db.query(Booking).filter(
+        Booking.space_id == data.space_id,
+        Booking.start_time < end,
+        Booking.end_time   > start,
+    ).first()
+    if conflict:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Orario non disponibile: occupato da {conflict.user} fino a {conflict.end_time.strftime('%H:%M')}."
+        )
 
-    save_db(data)
-    return {"message": "Prenotazione salvata con successo!", "booking": new_booking}
+    booking = Booking(
+        space_id=data.space_id,
+        user=data.user,
+        start_time=start,
+        end_time=end,
+    )
+    db.add(booking)
+    db.flush()   # ottieni l'id prima del commit
 
-@router.put("/{booking_id}")
-def update_booking(booking_id: int, booking: BookingCreate):
-    data = load_db()
-    booking_record = next((b for b in data["bookings"] if b["id"] == booking_id), None)
-    if not booking_record:
-        raise HTTPException(status_code=404, detail="Prenotazione non trovata.")
-    if booking_record["user"] != booking.user:
-        raise HTTPException(status_code=403, detail="Non autorizzato a modificare questa prenotazione.")
+    # Inviti
+    for invited in data.invited_users:
+        from database import User
+        if db.query(User).filter(User.username == invited).first():
+            inv = Invitation(booking_id=booking.id, username=invited)
+            db.add(inv)
+            db.add(Notification(
+                user=invited,
+                message=(
+                    f"📬 INVITO | {data.user} ti ha invitato alla prenotazione di '{space.name}' "
+                    f"il {start.strftime('%d/%m/%Y')} dalle {start.strftime('%H:%M')} alle {end.strftime('%H:%M')}. "
+                    f"Vai nelle notifiche per accettare o declinare."
+                )
+            ))
 
-    space = next((s for s in data["spaces"] if s["id"] == booking.space_id and s.get("active", True)), None)
-    if not space:
-        raise HTTPException(status_code=400, detail="Spazio non disponibile o in manutenzione.")
+    db.commit()
+    db.refresh(booking)
+    return {"message": "Prenotazione completata con successo!", "booking": _serialize_booking(booking)}
 
-    start_dt = datetime.strptime(booking.start_time, "%Y-%m-%d %H:%M")
-    end_dt = start_dt + timedelta(hours=booking.duration_hours)
-    if check_overlap(booking.space_id, start_dt, end_dt, data, ignore_id=booking_id):
-        raise HTTPException(status_code=400, detail="Conflitto: Slot già occupato.")
-
-    max_invites = space["capacity"] - 1
-    invited_users = [u.strip() for u in booking.invited_users if u.strip() and u.strip() != booking.user]
-    if len(invited_users) > max_invites:
-        raise HTTPException(status_code=400, detail=f"Numero massimo di invitati superato. Puoi invitare al massimo {max_invites} persone.")
-
-    existing_invites = {inv["username"]: inv for inv in booking_record.get("invitations", [])}
-    new_invitations = []
-    if "notifications" not in data:
-        data["notifications"] = []
-
-    for invited in invited_users:
-        status = existing_invites.get(invited, {}).get("status", "pending")
-        if invited not in existing_invites:
-            data["notifications"].append({
-                "user": invited,
-                "message": f"Sei stato invitato alla prenotazione dello spazio '{space['name']}' il {booking.start_time}."
-            })
-        new_invitations.append({"username": invited, "status": status})
-
-    booking_record["space_id"] = booking.space_id
-    booking_record["space_name"] = space["name"]
-    booking_record["start_time"] = booking.start_time
-    booking_record["end_time"] = end_dt.strftime("%Y-%m-%d %H:%M")
-    booking_record["invitations"] = new_invitations
-
-    save_db(data)
-    return {"message": "Prenotazione aggiornata con successo!", "booking": booking_record}
-
-@router.get("/invitations")
-def get_invitations(user: str):
-    data = load_db()
-    pending = []
-    for b in data["bookings"]:
-        if "invitations" in b:
-            for inv in b["invitations"]:
-                if inv["username"] == user and inv["status"] == "pending":
-                    pending.append({
-                        "booking_id": b["id"],
-                        "space_name": b["space_name"],
-                        "start_time": b["start_time"],
-                        "end_time": b["end_time"],
-                        "host": b["user"]
-                    })
-    return pending
-
-@router.post("/invitations/{booking_id}/respond")
-def respond_invitation(booking_id: int, user: str, status: str):
-    if status not in ["accepted", "declined"]:
-        raise HTTPException(status_code=400, detail="Stato risposta non valido.")
-    
-    data = load_db()
-    booking = next((b for b in data["bookings"] if b["id"] == booking_id), None)
-    if not booking:
-        raise HTTPException(status_code=404, detail="Prenotazione non trovata.")
-    
-    invitation = next((inv for inv in booking.get("invitations", []) if inv["username"] == user), None)
-    if not invitation:
-        raise HTTPException(status_code=404, detail="Invito non trovato per questo utente.")
-    
-    invitation["status"] = status
-    
-    # Invia notifica di aggiornamento all'organizzatore della prenotazione
-    if "notifications" not in data:
-        data["notifications"] = []
-    
-    stato_it = "accettato" if status == "accepted" else "declinato"
-    data["notifications"].append({
-        "user": booking["user"],
-        "message": f"L'utente {user} ha {stato_it} il tuo invito per l'aula '{booking['space_name']}' del {booking['start_time']}."
-    })
-    
-    save_db(data)
-    return {"message": f"Invito {stato_it} con successo."}
 
 @router.delete("/{booking_id}")
-def cancel_booking(booking_id: int, user: str):
-    data = load_db()
-    booking = next((b for b in data["bookings"] if b["id"] == booking_id), None)
+def cancel_booking(booking_id: int, user: str = Query(...), db: Session = Depends(get_db)):
+    from database import User as UserModel
+    booking = db.query(Booking).filter(Booking.id == booking_id).first()
     if not booking:
         raise HTTPException(status_code=404, detail="Prenotazione non trovata.")
-    if booking["user"] != user:
-        raise HTTPException(status_code=403, detail="Non autorizzato.")
-        
-    data["bookings"] = [b for b in data["bookings"] if b["id"] != booking_id]
-    save_db(data)
+
+    # Controlla se l'utente è admin
+    current_user_obj = db.query(UserModel).filter(UserModel.username == user).first()
+    is_admin = current_user_obj and current_user_obj.role == "admin"
+
+    if booking.user != user and not is_admin:
+        raise HTTPException(status_code=403, detail="Non hai il permesso di cancellare questa prenotazione.")
+
+    space_name = booking.space.name if booking.space else "?"
+
+    # Se l'admin cancella la prenotazione di un altro utente, notifica il proprietario
+    if is_admin and booking.user != user:
+        db.add(Notification(
+            user=booking.user,
+            message=(
+                f"⚠️ CANCELLAZIONE ADMIN | La tua prenotazione di '{space_name}' "
+                f"del {booking.start_time.strftime('%d/%m/%Y %H:%M')} "
+                f"è stata cancellata dall'amministratore."
+            )
+        ))
+
+    # Notifica gli invitati
+    for inv in booking.invitations:
+        if inv.username != user:
+            db.add(Notification(
+                user=inv.username,
+                message=(
+                    f"❌ La prenotazione di '{space_name}' "
+                    f"del {booking.start_time.strftime('%d/%m/%Y %H:%M')} "
+                    f"a cui eri invitato è stata cancellata."
+                )
+            ))
+
+    db.delete(booking)
+    db.commit()
     return {"message": "Prenotazione cancellata."}
