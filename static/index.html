@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>Gestione Spazi Comuni</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/it.js"></script>
     <style>
         body { background-color: #f8f9fa; }
         .google-card {
@@ -1279,7 +1282,7 @@
                     
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-secondary">1. Seleziona Data di Verifica</label>
-                        <input type="date" id="book-date" class="form-control form-control-sm" onchange="updateTimelineData()">
+                        <input type="text" id="book-date" class="form-control form-control-sm" placeholder="Seleziona data…" readonly>
                     </div>
 
                     <div class="mb-3">
@@ -1291,7 +1294,7 @@
                     <div class="row g-2 mb-2">
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-secondary">Orario Inizio</label>
-                            <input type="time" id="book-time" class="form-control form-control-sm" value="10:00" step="1800">
+                            <input type="text" id="book-time" class="form-control form-control-sm" placeholder="Seleziona orario…" readonly>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-secondary">Durata Periodo</label>
@@ -2310,7 +2313,8 @@
             document.getElementById('timeline-title').innerText = `📅 Gestione Aula: ${spaceName}`;
             
             if(!document.getElementById('book-date').value) {
-                document.getElementById('book-date').value = new Date().toISOString().split('T')[0];
+                if(window._fpDate) _fpDate.setDate(new Date(), false);
+                else document.getElementById('book-date').value = new Date().toISOString().split('T')[0];
             }
             
             document.getElementById('timeline-placeholder').style.display = 'none';
@@ -2963,6 +2967,42 @@
             })
             .catch(err => alert('Errore: ' + err.message));
         }
+
+        // ── Flatpickr: picker data/ora cross-browser ─────────────────────────
+        (function initFlatpickr() {
+            if (typeof flatpickr === 'undefined') return;
+
+            // Locale italiano (se caricato via CDN)
+            const locale = (flatpickr.l10ns && flatpickr.l10ns.it) ? flatpickr.l10ns.it : 'default';
+
+            // Picker DATA
+            window._fpDate = flatpickr('#book-date', {
+                locale: locale,
+                dateFormat: 'Y-m-d',       // YYYY-MM-DD — compatibile con il backend
+                allowInput: false,
+                disableMobile: true,        // usa sempre il picker custom, mai il nativo mobile
+                onChange: function() {
+                    updateTimelineData();
+                }
+            });
+
+            // Picker ORA (solo orologio, nessun calendario)
+            window._fpTime = flatpickr('#book-time', {
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: 'H:i',         // HH:MM 24h — compatibile con il backend
+                time_24hr: true,
+                minuteIncrement: 30,
+                minTime: '08:00',
+                maxTime: '18:00',
+                defaultHour: 10,
+                defaultMinute: 0,
+                disableMobile: true
+            });
+
+            // Imposta subito 10:00 nel campo ora (corrisponde al default nativo)
+            if (window._fpTime) _fpTime.setDate('1970-01-01 10:00', true);
+        })();
     </script>
 
     <div id="global-footer" class="site-footer" style="display:none;">© 2026 IDerby — Tutti i diritti riservati</div>
