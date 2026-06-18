@@ -83,8 +83,3 @@ Apri il browser su: **http://localhost:8000**
 | GET    | /api/bookings?space_id=N  | Prenotazioni per spazio (timeline)       |
 | POST   | /api/bookings             | Crea prenotazione                        |
 | DELETE | /api/bookings/{id}?user=X | Cancella prenotazione                    |
-
-## Documentazione interattiva
-
-Con il server avviato:  
-**http://localhost:8000/** (Swagger UI)
