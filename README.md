@@ -38,8 +38,8 @@ Apri il browser su: **http://localhost:8000**
 
 | Email                  | Password   | Ruolo |
 |------------------------|------------|-------|
-| mario@scuola.it        | mario123   | User  |
-| giulia@scuola.it       | giulia123  | User  |
+| marco@scuola.it        | marco2026  | User  |
+| elena@scuola.it        | elena2026  | User  |
 
 ## API principali
 
