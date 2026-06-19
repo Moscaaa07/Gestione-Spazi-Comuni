@@ -9,7 +9,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from datetime import datetime
 
 # Sostituito SQLite con la stringa di connessione a Supabase
-DATABASE_URL = "postgresql://postgres.bjoawolzjfukjlfsnjyi:TUA_PASSWORD@aws-0-eu-west-1.pooler.supabase.com:6543/postgres"
+DATABASE_URL = "postgresql://postgres.bjoawolzjfukjlfsnjyi:9NXfHqBaR5OpsEnD@aws-0-eu-west-1.pooler.supabase.com:6543/postgres"
 
 # Per PostgreSQL rimuoviamo connect_args={"check_same_thread": False}
 engine = create_engine(DATABASE_URL)
