@@ -1,5 +1,5 @@
 """
-database.py — Configurazione SQLite + SQLAlchemy e definizione modelli.
+database.py — Configurazione PostgreSQL + SQLAlchemy e definizione modelli.
 """
 from sqlalchemy import (
     create_engine, Column, Integer, String, Boolean,
@@ -8,10 +8,10 @@ from sqlalchemy import (
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from datetime import datetime
 
-# Sostituisci questa stringa con la tua Connection String (URI) presa da Supabase
-DATABASE_URL = "postgresql://postgres.bjoawolzjfukjlfsnjyi:9NXfHqBaR5OpsEnD@aws-0-eu-west-1.pooler.supabase.com:6543/postgres"
+# Sostituito SQLite con la stringa di connessione a Supabase
+DATABASE_URL = "postgresql://postgres.bjoawolzjfukjlfsnjyi:TUA_PASSWORD@aws-0-eu-west-1.pooler.supabase.com:6543/postgres"
 
-# Nota: Abbiamo rimosso connect_args perché l'opzione check_same_thread serve solo a SQLite
+# Per PostgreSQL rimuoviamo connect_args={"check_same_thread": False}
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
