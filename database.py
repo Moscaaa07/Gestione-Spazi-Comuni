@@ -8,9 +8,11 @@ from sqlalchemy import (
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from datetime import datetime
 
-DATABASE_URL = "sqlite:///./spazi_comuni.db"
+# Sostituisci questa stringa con la tua Connection String (URI) presa da Supabase
+DATABASE_URL = "postgresql://postgres.bjoawolzjfukjlfsnjyi:9NXfHqBaR5OpsEnD@aws-0-eu-west-1.pooler.supabase.com:6543/postgres"
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+# Nota: Abbiamo rimosso connect_args perché l'opzione check_same_thread serve solo a SQLite
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 

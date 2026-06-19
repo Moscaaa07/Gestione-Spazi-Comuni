@@ -1,0 +1,18 @@
+# Dipendenze Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# File di ambiente locali (contengono password e chiavi segrete)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Cartelle di build e file di sistema
+dist/
+build/
+.DS_Store
+Thumbs.db
