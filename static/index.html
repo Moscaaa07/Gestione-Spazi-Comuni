@@ -1390,7 +1390,7 @@
         </div>
     </div>
 
-    <div id="profile-section" class="container-fluid px-4" style="display: none;">
+    <div id="profile-section" class="container-fluid px-4" style="display: none; min-height: calc(100vh - 160px); padding-bottom: 60px;">
         <div class="card p-4 shadow-sm mb-4 border-riquadro-azzurro">
             <div class="d-flex align-items-center gap-3 mb-3">
                 <div class="rounded-circle bg-secondary d-flex justify-content-center align-items-center" style="width:72px; height:72px; font-size:2rem; color:#fff;">👤</div>
@@ -1443,13 +1443,56 @@
 
                 <!-- Chat moved to global floating panel -->
 
+                <div class="card p-3 shadow-sm mb-3 border-danger">
+                    <h6 class="fw-bold mb-3 text-danger">⚠️ Elimina Account</h6>
+                    <p class="text-muted small mb-3">Per eliminare il tuo account inserisci le tue credenziali di accesso. Questa operazione è irreversibile.</p>
+                    <div class="mb-2">
+                        <input type="text" id="delete-account-username" class="form-control form-control-sm" placeholder="Il tuo username / email">
+                    </div>
+                    <div class="mb-3">
+                        <div class="input-group input-group-sm">
+                            <input type="password" id="delete-account-password" class="form-control form-control-sm" placeholder="La tua password">
+                            <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('delete-account-password', this)" tabindex="-1" title="Mostra/nascondi">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger btn-sm w-100 fw-bold" onclick="submitDeleteAccount()">Elimina il mio account</button>
+                </div>
+
+                <div id="admin-delete-user-card" class="card p-3 shadow-sm mb-3 border-danger" style="display:none;">
+                    <h6 class="fw-bold mb-3 text-danger">🛡️ Elimina Account Utente (Admin)</h6>
+                    <p class="text-muted small mb-3">Come admin puoi eliminare l'account di qualsiasi utente inserendo solo il suo username. Questa operazione è irreversibile.</p>
+                    <div class="mb-3">
+                        <input type="text" id="admin-delete-target-username" class="form-control form-control-sm" placeholder="Username dell'utente da eliminare">
+                    </div>
+                    <button class="btn btn-danger btn-sm w-100 fw-bold" onclick="submitAdminDeleteUser()">Elimina account utente</button>
+                </div>
+
                 <div class="card p-3 shadow-sm">
                     <h6 class="fw-bold mb-3">Cambia password</h6>
                     <div class="mb-2">
-                        <input type="password" id="current-password" class="form-control form-control-sm" placeholder="Password attuale">
+                        <div class="input-group input-group-sm">
+                            <input type="password" id="current-password" class="form-control form-control-sm" placeholder="Password attuale">
+                            <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('current-password', this)" tabindex="-1" title="Mostra/nascondi">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>
+                            </button>
+                        </div>
                     </div>
                     <div class="mb-2">
-                        <input type="password" id="new-password-profile" class="form-control form-control-sm" placeholder="Nuova password">
+                        <div class="input-group input-group-sm">
+                            <input type="password" id="new-password-profile" class="form-control form-control-sm" placeholder="Nuova password" oninput="updatePasswordRequirements('new-password-profile','profile')">
+                            <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('new-password-profile', this)" tabindex="-1" title="Mostra/nascondi">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-2 p-2 rounded" style="background:#f8f9fa; border:1px solid #e9ecef; font-size:11px;">
+                        <div class="fw-semibold mb-1" style="color:#495057;">Requisiti password:</div>
+                        <div id="pwd-req-upper-profile" class="d-flex align-items-center gap-1" style="color:#6c757d;"><span>○</span> Almeno 1 lettera maiuscola</div>
+                        <div id="pwd-req-num-profile" class="d-flex align-items-center gap-1" style="color:#6c757d;"><span>○</span> Almeno 1 numero</div>
+                        <div id="pwd-req-special-profile" class="d-flex align-items-center gap-1" style="color:#6c757d;"><span>○</span> Almeno 1 carattere speciale (!@#$%...)</div>
+                        <div id="pwd-req-len-profile" class="d-flex align-items-center gap-1" style="color:#6c757d;"><span>○</span> Minimo 8 caratteri</div>
                     </div>
                     <button class="btn btn-success btn-sm" onclick="submitPasswordChange()">Aggiorna password</button>
                 </div>
@@ -1471,8 +1514,19 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Crea una Password</label>
-                        <input type="password" id="reg-password" class="form-control" placeholder="Minimo 4 caratteri">
-                        <div class="form-text text-muted small">Nota: Se l'email contiene la parola 'admin', verrai registrato come amministratore.</div>
+                        <div class="input-group">
+                            <input type="password" id="reg-password" class="form-control" placeholder="Crea una password sicura" oninput="updatePasswordRequirements('reg-password','reg')">
+                            <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('reg-password', this)" tabindex="-1" title="Mostra/nascondi">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>
+                            </button>
+                        </div>
+                        <div class="mt-2 p-2 rounded" style="background:#f8f9fa; border:1px solid #e9ecef; font-size:11px;">
+                            <div class="fw-semibold mb-1" style="color:#495057;">Requisiti password obbligatori:</div>
+                            <div id="pwd-req-upper-reg" class="d-flex align-items-center gap-1" style="color:#6c757d;"><span>○</span> Almeno 1 lettera maiuscola</div>
+                            <div id="pwd-req-num-reg" class="d-flex align-items-center gap-1" style="color:#6c757d;"><span>○</span> Almeno 1 numero</div>
+                            <div id="pwd-req-special-reg" class="d-flex align-items-center gap-1" style="color:#6c757d;"><span>○</span> Almeno 1 carattere speciale (!@#$%...)</div>
+                            <div id="pwd-req-len-reg" class="d-flex align-items-center gap-1" style="color:#6c757d;"><span>○</span> Minimo 8 caratteri</div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1487,22 +1541,45 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-3">
                 <div class="modal-header">
-                    <h5 class="modal-title">Modifica / Ripristina Password</h5>
+                    <h5 class="modal-title">🔒 Ripristino Password Sicuro</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Indica il tuo account (Email)</label>
-                        <input type="email" id="reset-email" class="form-control" placeholder="esempio@scuola.com">
+                    <!-- Step 1: Request code -->
+                    <div id="reset-step1">
+                        <p class="text-muted small mb-3">Inserisci la tua email. Riceverai un codice di verifica a 6 cifre valido per 5 minuti.</p>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Email account</label>
+                            <input type="email" id="reset-email" class="form-control" placeholder="esempio@scuola.com">
+                        </div>
+                        <button type="button" onclick="requestResetCode()" class="btn btn-primary w-100">Invia codice di verifica</button>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Nuova Password</label>
-                        <input type="password" id="reset-password" class="form-control" placeholder="Inserisci la nuova password">
+                    <!-- Step 2: Enter code + new password -->
+                    <div id="reset-step2" style="display:none;">
+                        <div class="alert alert-success py-2 small mb-3" id="reset-code-demo-alert"></div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Codice di verifica (6 cifre)</label>
+                            <input type="text" id="reset-code-input" class="form-control text-center fw-bold" placeholder="000000" maxlength="6" style="letter-spacing:0.3em; font-size:1.2rem;">
+                            <div class="form-text text-muted">Il codice scade in 5 minuti.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nuova Password</label>
+                            <div class="input-group">
+                                <input type="password" id="reset-password" class="form-control" placeholder="Nuova password sicura" oninput="updatePasswordRequirements('reset-password','reset')">
+                                <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('reset-password', this)" tabindex="-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>
+                                </button>
+                            </div>
+                            <div class="mt-2 p-2 rounded" style="background:#f8f9fa; border:1px solid #e9ecef; font-size:11px;">
+                                <div id="pwd-req-upper-reset" class="d-flex align-items-center gap-1" style="color:#6c757d;"><span>○</span> Almeno 1 lettera maiuscola</div>
+                                <div id="pwd-req-num-reset" class="d-flex align-items-center gap-1" style="color:#6c757d;"><span>○</span> Almeno 1 numero</div>
+                                <div id="pwd-req-special-reset" class="d-flex align-items-center gap-1" style="color:#6c757d;"><span>○</span> Almeno 1 carattere speciale</div>
+                                <div id="pwd-req-len-reset" class="d-flex align-items-center gap-1" style="color:#6c757d;"><span>○</span> Minimo 8 caratteri</div>
+                            </div>
+                        </div>
+                        <button type="button" onclick="submitResetPassword()" class="btn btn-success w-100 fw-bold">Conferma e cambia password</button>
+                        <button type="button" onclick="backToResetStep1()" class="btn btn-link btn-sm mt-2">← Torna indietro</button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                    <button type="button" onclick="submitResetPassword()" class="btn btn-primary">Aggiorna Password</button>
                 </div>
             </div>
         </div>
@@ -1570,10 +1647,10 @@
             const alertDiv = document.createElement('div');
             alertDiv.id = 'custom-alert-box';
             alertDiv.style.position = 'fixed';
-            alertDiv.style.top = '25px';
+            alertDiv.style.top = '16px';
             alertDiv.style.left = '50%';
             alertDiv.style.transform = 'translateX(-50%)';
-            alertDiv.style.zIndex = '99999';
+            alertDiv.style.zIndex = '2147483647';
             alertDiv.style.minWidth = '340px';
             alertDiv.style.maxWidth = '500px';
             alertDiv.className = 'card shadow-lg border-primary animate-fade';
@@ -1603,13 +1680,74 @@
             event.preventDefault();
             document.getElementById('reset-email').value = '';
             document.getElementById('reset-password').value = '';
+            document.getElementById('reset-code-input').value = '';
+            document.getElementById('reset-step1').style.display = '';
+            document.getElementById('reset-step2').style.display = 'none';
             resetPasswordModal.show();
+        }
+
+        function backToResetStep1() {
+            document.getElementById('reset-step1').style.display = '';
+            document.getElementById('reset-step2').style.display = 'none';
+        }
+
+        function requestResetCode() {
+            const email = document.getElementById('reset-email').value.trim();
+            if (!email) return alert('Inserisci la tua email.');
+            fetch('/api/auth/request-reset-code', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ username: email })
+            })
+            .then(res => {
+                if (!res.ok) return res.json().then(err => { throw new Error(err.detail); });
+                return res.json();
+            })
+            .then(data => {
+                document.getElementById('reset-step1').style.display = 'none';
+                document.getElementById('reset-step2').style.display = '';
+                const demoAlert = document.getElementById('reset-code-demo-alert');
+                if (data.demo_code) {
+                    demoAlert.innerHTML = `✅ Codice di verifica generato (modalità demo):<br><strong style="font-size:1.3rem;letter-spacing:0.3em;">${data.demo_code}</strong><br><span class="text-muted" style="font-size:10px;">In produzione questo codice verrebbe inviato via email.</span>`;
+                    demoAlert.style.display = '';
+                } else {
+                    demoAlert.innerHTML = '✅ Codice inviato alla tua email.';
+                    demoAlert.style.display = '';
+                }
+            })
+            .catch(err => alert('Errore: ' + err.message));
+        }
+
+        // ── Validazione password client-side ──────────────────────────────────
+        function validatePassword(password) {
+            const errors = [];
+            if (password.length < 8) errors.push("Minimo 8 caratteri.");
+            if (!/[A-Z]/.test(password)) errors.push("Almeno 1 lettera maiuscola.");
+            if (!/\d/.test(password)) errors.push("Almeno 1 numero.");
+            if (!/[!@#$%^&*()\-_=+\[\]{};':",.<>?`~\\|]/.test(password)) errors.push("Almeno 1 carattere speciale.");
+            return errors;
+        }
+
+        function updatePasswordRequirements(inputId, prefix) {
+            const pwd = document.getElementById(inputId) ? document.getElementById(inputId).value : '';
+            function setReq(id, ok) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.querySelector('span').textContent = ok ? '✅' : '○';
+                el.style.color = ok ? '#198754' : '#6c757d';
+            }
+            setReq(`pwd-req-upper-${prefix}`, /[A-Z]/.test(pwd));
+            setReq(`pwd-req-num-${prefix}`,   /\d/.test(pwd));
+            setReq(`pwd-req-special-${prefix}`, /[!@#$%^&*()\-_=+\[\]{};':",.<>?`~\\|]/.test(pwd));
+            setReq(`pwd-req-len-${prefix}`,   pwd.length >= 8);
         }
 
         function submitRegister() {
             const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-password').value;
             if(!email || !password) return alert("Inserisci credenziali valide.");
+            const pwdErrors = validatePassword(password);
+            if (pwdErrors.length > 0) return alert("Password non valida:\n• " + pwdErrors.join("\n• "));
 
             fetch('/api/auth/register', {
                 method: 'POST',
@@ -1637,21 +1775,25 @@
         });
 
         function submitResetPassword() {
-            const email = document.getElementById('reset-email').value;
+            const email = document.getElementById('reset-email').value.trim();
+            const code = document.getElementById('reset-code-input').value.trim();
             const newPassword = document.getElementById('reset-password').value;
-            if(!email || !newPassword) return alert("Compila tutti i campi richiesti.");
+            if(!code) return alert("Inserisci il codice di verifica.");
+            if(!newPassword) return alert("Inserisci la nuova password.");
+            const pwdErrors = validatePassword(newPassword);
+            if (pwdErrors.length > 0) return alert("Password non valida:\n• " + pwdErrors.join("\n• "));
 
-            fetch('/api/auth/reset-password', {
+            fetch('/api/auth/verify-reset-code', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ username: email, new_password: newPassword })
+                body: JSON.stringify({ username: email, code: code, new_password: newPassword })
             })
             .then(res => {
                 if(!res.ok) return res.json().then(err => { throw new Error(err.detail) });
                 return res.json();
             })
             .then(data => {
-                alert(data.message);
+                alert("✅ " + data.message);
                 resetPasswordModal.hide();
             })
             .catch(err => alert("Errore: " + err.message));
@@ -1861,6 +2003,8 @@
             document.getElementById('main-section').style.display = 'none';
             document.getElementById('profile-section').style.display = 'block';
             document.getElementById('admin-panel').style.display = 'none';
+            const adminCard = document.getElementById('admin-delete-user-card');
+            if (adminCard) adminCard.style.display = (currentRole === 'admin') ? 'block' : 'none';
             loadUserProfile();
         }
 
@@ -1974,6 +2118,8 @@
             const oldPass = document.getElementById('current-password').value;
             const newPass = document.getElementById('new-password-profile').value;
             if (!oldPass || !newPass) return alert('Compila entrambi i campi password.');
+            const pwdErrors = validatePassword(newPass);
+            if (pwdErrors.length > 0) return alert("Nuova password non valida:\n• " + pwdErrors.join("\n• "));
             fetch('/api/auth/change-password', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -2008,6 +2154,50 @@
                 localStorage.setItem('loggedDisplayName', newName);
                 document.getElementById('user-display').innerText = `Utente: ${newName} (${currentRole})`;
                 document.getElementById('profile-name').innerText = newName;
+            })
+            .catch(err => alert('Errore: ' + err.message));
+        }
+
+        function submitAdminDeleteUser() {
+            const target = document.getElementById('admin-delete-target-username').value.trim();
+            if (!target) return alert('Inserisci il nome utente da eliminare.');
+            if (target === currentUser) return alert('Per eliminare il tuo account usa la sezione "Elimina Account" qui sopra.');
+            if (!confirm(`Sei sicuro di voler eliminare l'account "${target}"? Questa operazione è irreversibile.`)) return;
+            fetch('/api/auth/admin-delete-user', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ admin_username: currentUser, target_username: target })
+            })
+            .then(res => {
+                if (!res.ok) return res.json().then(err => { throw new Error(err.detail); });
+                return res.json();
+            })
+            .then(data => {
+                alert('✅ ' + data.message);
+                document.getElementById('admin-delete-target-username').value = '';
+            })
+            .catch(err => alert('Errore: ' + err.message));
+        }
+
+        function submitDeleteAccount() {
+            const username = document.getElementById('delete-account-username').value.trim();
+            const password = document.getElementById('delete-account-password').value;
+            if (!username || !password) return alert('Inserisci username/email e password per procedere.');
+            if (!confirm(`Sei sicuro di voler eliminare l'account "${username}"? Questa operazione è irreversibile.`)) return;
+            fetch('/api/auth/delete-account', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ username: username, password: password })
+            })
+            .then(res => {
+                if (!res.ok) return res.json().then(err => { throw new Error(err.detail); });
+                return res.json();
+            })
+            .then(data => {
+                alert('✅ ' + data.message + ' Verrai disconnesso.');
+                document.getElementById('delete-account-username').value = '';
+                document.getElementById('delete-account-password').value = '';
+                logout();
             })
             .catch(err => alert('Errore: ' + err.message));
         }
@@ -2334,6 +2524,13 @@
             if(!document.getElementById('book-date').value) {
                 if(window._fpDate) _fpDate.setDate(new Date(), false);
                 else document.getElementById('book-date').value = new Date().toISOString().split('T')[0];
+            }
+
+            // Imposta 08:00 come orario di inizio default
+            if (window._fpTime) {
+                _fpTime.setDate('1970-01-01 08:00', true);
+            } else {
+                document.getElementById('book-time').value = '08:00';
             }
             
             document.getElementById('timeline-placeholder').style.display = 'none';
@@ -2715,7 +2912,27 @@
             "Consiglio: Bevi acqua e fai stretching per 2 minuti ora.",
             "Promemoria movimento: Alzati e cammina per 3 minuti — il tuo corpo ti ringrazierà!",
             "Suggerimento: Respira profondamente 5 volte ora per rilassare la mente.",
-            "Curiosità: I pinguini possono ricordare i volti degli amici — anche io ricordo te!"
+            "Curiosità: I pinguini possono ricordare i volti degli amici — anche io ricordo te!",
+            "Battuta: Cosa dice un pinguino quando vede un computer lento? 'Hai bisogno di più iceberg RAM!' 🧊",
+            "Consiglio: Hai prenotato la tua aula per oggi? Non aspettare troppo, le prenotazioni vanno veloci!",
+            "Curiosità: I pinguini sono monogami — molto più fedeli di certi utenti alle loro password! 🐧❤️",
+            "Battuta: Perché il pinguino è diventato programmatore? Perché ama lavorare in 'black & white' mode! ⬛⬜",
+            "Suggerimento: Se hai colleghi fastidiosi, pensa ai pinguini: loro vivono ammassati e stanno benissimo! 🐧🐧🐧",
+            "Promemoria: Hai controllato le notifiche oggi? Potrebbero esserci inviti in attesa! 📬",
+            "Battuta: Cosa fa un pinguino quando trova un bug nel codice? Lo congela! ❄️🐛",
+            "Consiglio: Usa la chat per coordinarti con i colleghi prima di prenotare — risparmia tempo a tutti! 💬",
+            "Curiosità: I pinguini camminano circa 100 km per trovare cibo. Io invece trovo le aule in un click! 📍",
+            "Battuta: Perché il pinguino non fa mai overtime? Perché alle 18:00 l'aula chiude! 🕕",
+            "Suggerimento: Ricordati che puoi filtrare le aule per dotazione — cerca quella col proiettore se ne hai bisogno! 🎬",
+            "Curiosità: Un pinguino imperatore può apnea fino a 22 minuti. Io invece dimentico di respirare mentre aspetto che si carichi la pagina! 😅",
+            "Battuta: Cosa dice il pinguino al collega in ritardo? 'Sei più lento di Internet a 56k!' 🐌",
+            "Promemoria: Aggiungi i tuoi amici nella sezione profilo per invitarli facilmente alle prenotazioni! 👥",
+            "Curiosità: I pinguini comunicano con richiami unici — noi usiamo la chat, ma è lo stesso concetto! 🗣️",
+            "Battuta: Perché i pinguini sono bravi con i database? Perché sanno sempre dove tenere i 'fish records'! 🐟📂",
+            "Consiglio: Non dimenticare di disdire le prenotazioni che non ti servono più — altri potrebbero averne bisogno! ♻️",
+            "Battuta: Cosa fa un pinguino informatico il venerdì? Fa il 'cold deploy' nel weekend! ❄️🚀",
+            "Suggerimento: Guarda sempre la timeline prima di prenotare — eviti brutte sorprese di sovrapposizioni! 📅",
+            "Curiosità: I pinguini sono tra le poche specie che si 'baciano' per salutarsi — qui noi ci salutiamo con un invito in aula! 🤝"
         ];
         let mascotIndex = 0;
         let mascotTimeoutId = null;
@@ -2792,6 +3009,83 @@
             }
         }
 
+        // ── Chat di gruppo "Tutti" ─────────────────────────────────────────────
+        let _groupLastMsgId = null;
+
+        function openGroupChat() {
+            currentChatWith = '__GROUP__';
+            const headerInfo = document.getElementById('chat-header-info');
+            if (headerInfo) {
+                headerInfo.innerHTML = `
+                    <div class="conv-avatar" style="background:#4361ee; width:34px; height:34px; font-size:0.85rem;">👥</div>
+                    <div>
+                        <div class="fw-semibold" style="font-size:0.9rem; color:#1a1a2e;">Chat di gruppo — Tutti</div>
+                        <div style="font-size:10px; color:#9ca3af;">Messaggio visibile a tutti gli utenti</div>
+                    </div>`;
+            }
+            const box = document.getElementById('chat-messages');
+            const emptyState = document.getElementById('chat-empty-state');
+            if (emptyState) emptyState.style.display = 'none';
+            box.innerHTML = '<div class="d-flex justify-content-center align-items-center h-100"><div class="spinner-border spinner-border-sm text-primary" style="opacity:0.5;"></div></div>';
+            _groupLastMsgId = null;
+            loadGroupMessages(true);
+            document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
+            const groupItem = document.getElementById('conv-item-tutti');
+            if (groupItem) groupItem.classList.add('active');
+        }
+
+        function loadGroupMessages(forceScroll) {
+            fetch('/api/auth/group-messages')
+            .then(res => { if (!res.ok) throw new Error(res.status); return res.json(); })
+            .then(msgs => {
+                const newLastId = (msgs && msgs.length) ? msgs[msgs.length - 1].id : null;
+                if (!forceScroll && newLastId === _groupLastMsgId) return;
+                const box = document.getElementById('chat-messages');
+                if (!box) return;
+                _renderMessages(msgs, box, forceScroll);
+                _groupLastMsgId = newLastId;
+            })
+            .catch(() => {});
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+            if (!currentChatWith) {
+                input.placeholder = '← Prima seleziona un utente!';
+                setTimeout(() => { input.placeholder = 'Scrivi un messaggio…'; }, 2000);
+                return;
+            }
+            input.value = '';
+            input.focus();
+            if (currentChatWith === '__GROUP__') {
+                fetch('/api/auth/group-message', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({ from: currentUser, content: text })
+                })
+                .then(res => res.json())
+                .then(() => loadGroupMessages(true))
+                .catch(() => { input.value = text; customAlert('❌ Errore invio messaggio. Riprova.'); });
+                return;
+            }
+            fetch('/api/auth/send-message', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ from: currentUser, to: currentChatWith, content: text })
+            })
+            .then(res => res.json())
+            .then(() => {
+                loadMessages(currentChatWith, true);
+                loadConversations();
+            })
+            .catch(() => {
+                input.value = text;
+                customAlert('❌ Errore invio messaggio. Riprova.');
+            });
+        }
+
         function loadConversations() {
             if (!currentUser) return;
             Promise.all([
@@ -2801,13 +3095,22 @@
                 updateChatNavBadge(convList);
                 const el = document.getElementById('conversations-list');
                 el.innerHTML = '';
+
+                // ── "Tutti" group chat at the very top ────────────────────────
+                const isGroupActive = currentChatWith === '__GROUP__' ? ' active' : '';
+                el.innerHTML = `
+                    <div class="conv-item${isGroupActive}" id="conv-item-tutti" onclick="openGroupChat()">
+                        <div class="conv-avatar" style="background:#4361ee;">👥</div>
+                        <div class="conv-info">
+                            <div class="conv-name">Chat di gruppo — Tutti</div>
+                            <div class="conv-last">Messaggio visibile a tutti</div>
+                        </div>
+                    </div>`;
+
                 const convMap = {};
                 (convList || []).forEach(c => { convMap[c.user] = c; });
-                const others = (allUsers || []).filter(u => u.username !== currentUser);
-                if (others.length === 0) {
-                    el.innerHTML = '<div class="small text-muted p-3 text-center" style="color:#9ca3af;">Nessun altro utente registrato</div>';
-                    return;
-                }
+                const others = (allUsers || []).filter(u => u.username !== currentUser && u.username !== '__TUTTI__');
+                if (others.length === 0) return;
                 // Sort: unread first, then those with conversations, then rest
                 others.sort((a, b) => {
                     const au = (convMap[a.username] || {}).unread || 0;
@@ -2887,7 +3190,7 @@
             }
             let lastDate = null;
             msgs.forEach(m => {
-                const isMine = m.from !== currentChatWith;
+                const isMine = currentChatWith === '__GROUP__' ? (m.from === currentUser) : (m.from !== currentChatWith);
                 const msgDate = new Date(m.timestamp).toLocaleDateString('it-IT');
                 if (msgDate !== lastDate) {
                     lastDate = msgDate;
@@ -2927,39 +3230,16 @@
             return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
         }
 
-        function sendChatMessage() {
-            const input = document.getElementById('chat-input');
-            const text = input.value.trim();
-            if (!text) return;
-            if (!currentChatWith) {
-                input.placeholder = '← Prima seleziona un utente!';
-                setTimeout(() => { input.placeholder = 'Scrivi un messaggio…'; }, 2000);
-                return;
-            }
-            input.value = '';
-            input.focus();
-            fetch('/api/auth/send-message', {
-                method: 'POST',
-                headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({ from: currentUser, to: currentChatWith, content: text })
-            })
-            .then(res => res.json())
-            .then(() => {
-                loadMessages(currentChatWith, true);
-                loadConversations();
-            })
-            .catch(() => {
-                input.value = text;
-                customAlert('❌ Errore invio messaggio. Riprova.');
-            });
-        }
-
         // Auto-refresh messaggi e conversazioni in tempo reale (2s)
         setInterval(() => {
             const chatCard = document.getElementById('chat-card');
             if (chatCard && chatCard.classList.contains('floating')) {
                 loadConversations();
-                if (currentChatWith) loadMessages(currentChatWith, false);
+                if (currentChatWith === '__GROUP__') {
+                    loadGroupMessages(false);
+                } else if (currentChatWith) {
+                    loadMessages(currentChatWith, false);
+                }
             }
         }, 2000);
 
@@ -3047,13 +3327,13 @@
                 minuteIncrement: 30,
                 minTime: '08:00',
                 maxTime: '18:00',
-                defaultHour: 10,
+                defaultHour: 8,
                 defaultMinute: 0,
                 disableMobile: true
             });
 
-            // Imposta subito 10:00 nel campo ora (corrisponde al default nativo)
-            if (window._fpTime) _fpTime.setDate('1970-01-01 10:00', true);
+            // Imposta subito 08:00 nel campo ora (corrisponde al default nativo)
+            if (window._fpTime) _fpTime.setDate('1970-01-01 08:00', true);
         })();
     </script>
 

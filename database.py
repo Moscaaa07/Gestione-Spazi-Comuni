@@ -113,6 +113,14 @@ class Message(Base):
     receiver  = relationship("User", back_populates="recv_messages",  foreign_keys=[to_user])
 
 
+class DeletedAccount(Base):
+    __tablename__ = "deleted_accounts"
+
+    id         = Column(Integer, primary_key=True)
+    username   = Column(String, nullable=False)
+    deleted_at = Column(DateTime, default=datetime.utcnow)
+
+
 # ─── Helper ─────────────────────────────────────────────────────────────────
 
 def get_db():
