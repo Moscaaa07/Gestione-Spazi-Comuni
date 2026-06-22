@@ -68,7 +68,6 @@
             padding: 10px 14px;
         }
 
-        /* Footer in fondo alla pagina, visibile solo scrollando fino in fondo */
         .site-footer {
             position: relative;
             width: 100%;
@@ -81,7 +80,6 @@
             margin-top: auto;
         }
 
-        /* Theme-specific footer colours */
         body.theme-neon .site-footer {
             background: linear-gradient(135deg, #02030a 0%, #050816 100%);
             color: #ffffff;
@@ -104,7 +102,6 @@
             border-top: 1px solid rgba(0,0,0,0.06);
         }
 
-        /* Ensure readable text on explicit light backgrounds (.bg-white / .card.bg-light) */
         .list-group-item.bg-white,
         .card.bg-light,
         .card.bg-white,
@@ -130,7 +127,6 @@
         .card.bg-white p {
             color: rgba(17,24,39,0.8) !important;
         }
-        /* Badges inside light cards should have dark text for legibility */
         .card.bg-light .badge,
         .card.bg-white .badge,
         .list-group-item.bg-white .badge {
@@ -240,7 +236,6 @@
             text-align: left;
         }
 
-        /* ── Mascot panel: always readable regardless of theme ─────────────── */
         #mascot-panel .card {
             background: #ffffff !important;
             color: #212529 !important;
@@ -250,21 +245,20 @@
         #mascot-panel .card #mascot-message { color: #333 !important; }
         #mascot-panel .card .btn-outline-secondary { color: #495057 !important; border-color: #6c757d !important; }
 
-        /* Dark / Neon: invert to dark card + white text */
-        body.theme-dark  #mascot-panel .card,
-        body.theme-neon  #mascot-panel .card {
+        body.theme-dark #mascot-panel .card,
+        body.theme-neon #mascot-panel .card {
             background: rgba(4,12,24,0.97) !important;
             border-color: rgba(126,249,255,0.14) !important;
             color: #e8f8ff !important;
         }
-        body.theme-dark  #mascot-panel .card .fw-bold,
-        body.theme-neon  #mascot-panel .card .fw-bold,
-        body.theme-dark  #mascot-panel .card #mascot-message,
-        body.theme-neon  #mascot-panel .card #mascot-message { color: #e8f8ff !important; }
-        body.theme-dark  #mascot-panel .card .text-muted,
-        body.theme-neon  #mascot-panel .card .text-muted { color: rgba(220,245,255,0.6) !important; }
-        body.theme-dark  #mascot-panel .card .btn-outline-secondary,
-        body.theme-neon  #mascot-panel .card .btn-outline-secondary {
+        body.theme-dark #mascot-panel .card .fw-bold,
+        body.theme-neon #mascot-panel .card .fw-bold,
+        body.theme-dark #mascot-panel .card #mascot-message,
+        body.theme-neon #mascot-panel .card #mascot-message { color: #e8f8ff !important; }
+        body.theme-dark #mascot-panel .card .text-muted,
+        body.theme-neon #mascot-panel .card .text-muted { color: rgba(220,245,255,0.6) !important; }
+        body.theme-dark #mascot-panel .card .btn-outline-secondary,
+        body.theme-neon #mascot-panel .card .btn-outline-secondary {
             color: #b0e8ff !important;
             border-color: rgba(176,232,255,0.45) !important;
         }
@@ -284,22 +278,18 @@
             background: linear-gradient(90deg, #2c3e50 0%, #34495e 100%) !important;
             color: #ffffff;
         }
-        /* Tema 'Scuro' rimosso */
-        /* Tutte le regole specifiche del tema scuro sono state eliminate per rispettare la richiesta dell'utente. */
-        /* Background uniformity fix: force full-viewport non-repeating backgrounds to avoid visual seams/artifacts */
+
         html, body { height: 100%; min-height: 100%; margin: 0; padding: 0; }
-        /* nessun padding-bottom extra necessario */
         body, body::before, body::after {
             background-repeat: no-repeat !important;
             background-size: cover !important;
             background-position: center center !important;
             background-attachment: fixed !important;
-            -webkit-transform: translate3d(0,0,0); /* GPU hint to avoid rendering seams */
+            -webkit-transform: translate3d(0,0,0);
             -webkit-backface-visibility: hidden;
         }
         body::before, body::after { position: fixed !important; inset: 0 !important; content: "" !important; pointer-events: none !important; z-index: -1 !important; }
 
-        /* Theme-specific safe defaults to avoid tiled overlays */
         body.theme-light, body.theme-retro, body.theme-neon, body.theme-natura, body.theme-cielo {
             background-repeat: no-repeat !important;
             background-size: cover !important;
@@ -307,7 +297,6 @@
             background-attachment: fixed !important;
         }
 
-        /* Disable small repeating grid overlay that could produce visible seams in some neon backgrounds */
         body.theme-neon::before { background-image: none !important; background-size: cover !important; opacity: 0.12 !important; }
         body.theme-neon::after { background-size: cover !important; opacity: 0.12 !important; }
         body.theme-neon #spaces-list .list-group-item.bg-white,
@@ -338,7 +327,6 @@
             background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
             color: #031017 !important;
         }
-        /* Make white/light panels truly readable in neon: switch to dark text and ensure icons are visible */
         body.theme-neon .card.bg-white,
         body.theme-neon .card.bg-light,
         body.theme-neon .list-group-item.bg-white,
@@ -364,7 +352,6 @@
         body.theme-neon .list-group-item.bg-white small {
             color: rgba(7,16,26,0.85) !important;
         }
-        /* Ensure input icons (calendar / clock) are visible on light inputs inside neon cards */
         body.theme-neon .card.bg-white .input-group-text,
         body.theme-neon .card.bg-light .input-group-text,
         body.theme-neon .card.bg-white .bi,
@@ -377,14 +364,12 @@
         body.theme-neon .card.bg-light .form-control::placeholder {
             color: rgba(7,16,26,0.45) !important;
         }
-        /* SVG icons inside light panels (e.g., calendar/clock) */
         body.theme-neon .card.bg-white svg,
         body.theme-neon .card.bg-light svg {
             fill: #07101a !important;
             stroke: #07101a !important;
             color: #07101a !important;
         }
-        /* Specific fix for 'Le Tue Prenotazioni' card in the right column: dark background + white text */
         body.theme-neon .col-md-3 > .card {
             background: linear-gradient(180deg, rgba(10,16,28,0.98), rgba(4,8,16,0.95)) !important;
             color: #effcff !important;
@@ -408,7 +393,6 @@
         body.theme-dark .badge { background: linear-gradient(90deg, var(--dark-accent), var(--dark-accent-2)); color: #022025; box-shadow: 0 6px 14px rgba(107,214,255,0.06); }
         body.theme-dark .google-card { border-radius: 12px; }
 
-        /* Neon theme (enhanced): dynamic background, neon accents and glow */
         :root {
             --neon-cyan: #7ef9ff;
             --neon-pink: #ff5ad6;
@@ -492,11 +476,9 @@
             letter-spacing: 0.02em;
         }
         body.theme-neon .text-muted { color: rgba(234,255,255,0.7) !important; }
-        /* Ensure login card error/descriptions are readable in neon theme */
         body.theme-neon .google-card .text-muted,
         body.theme-neon .google-card .form-text,
         body.theme-neon .google-card .small { color: #ffffff !important; }
-        /* Custom alert / error boxes should also show white descriptions in neon */
         body.theme-neon #custom-alert-box .card-text,
         body.theme-neon #custom-alert-box .card-body .card-text,
         body.theme-neon #custom-alert-box h6 { color: #ffffff !important; }
@@ -608,7 +590,6 @@
             border-color: rgba(126,249,255,0.08);
         }
 
-        /* ── Neon: Registro Globale → barre nere con testo bianco ─────────── */
         body.theme-neon #admin-global-bookings-list .list-group-item {
             background: #000000 !important;
             color: #ffffff !important;
@@ -771,27 +752,21 @@
         body.theme-retro .text-muted { color: rgba(38,38,38,0.7) !important; }
         body.theme-retro .form-control, body.theme-retro .form-select { background: #fff; color: #262626; border-color: #c44569; }
         
-        /* Stili per i bordi richiesti dallo schema */
         .border-riquadro-rosso { border: 2.5px solid #dc3545 !important; }
         .border-riquadro-azzurro { border: 2.5px solid #007bff !important; }
 
-        /* ── Timeline "Linea Temporale Giornaliera": testo adattivo per tema ── */
-        /* Neon/Dark: container scuro → testo orario bianco nei slot liberi */
         body.theme-neon #daily-timeline-container .timeline-slot span.fw-bold,
-        body.theme-dark  #daily-timeline-container .timeline-slot span.fw-bold {
+        body.theme-dark #daily-timeline-container .timeline-slot span.fw-bold {
             color: #e8f8ff !important;
         }
-        /* Se lo slot è occupato (ha bg-light = sfondo chiaro) → testo scuro */
         body.theme-neon #daily-timeline-container .timeline-slot.bg-light span.fw-bold,
-        body.theme-dark  #daily-timeline-container .timeline-slot.bg-light span.fw-bold {
+        body.theme-dark #daily-timeline-container .timeline-slot.bg-light span.fw-bold {
             color: #111 !important;
         }
-        /* Tutti gli altri temi con sfondo chiaro: testo scuro (default già ok) */
         #daily-timeline-container .timeline-slot span.fw-bold {
             color: inherit;
         }
 
-        /* Timeline slots style */
         .timeline-slot {
             display: flex;
             justify-content: space-between;
@@ -801,12 +776,10 @@
             border-radius: 4px;
             font-size: 0.85rem;
         }
-        /* Ensure room names like "Aula1" are black across screens */
         #spaces-list .fw-bold, #admin-spaces-list .fw-bold, #admin-global-bookings-list .fw-bold, #my-bookings-list .fw-bold, #profile-bookings-list .fw-bold, .list-group-item .fw-bold {
             color: #000 !important;
         }
 
-        /* In neon theme, keep room names white for readability */
         body.theme-neon #spaces-list .fw-bold,
         body.theme-neon #admin-spaces-list .fw-bold,
         body.theme-neon #admin-global-bookings-list .fw-bold,
@@ -816,26 +789,22 @@
             color: #fff !important;
         }
 
-        /* Spaces list: scroll after 5 items */
         #spaces-list {
             max-height: 430px;
             overflow-y: auto;
             overflow-x: hidden;
         }
 
-        /* Admin spaces list: scroll after 6 items */
         #admin-spaces-list {
             max-height: 516px;
             overflow-y: auto;
             overflow-x: hidden;
         }
 
-        /* Neon theme: keep placeholder text visible in the friends input */
         body.theme-neon #friend-target::placeholder {
             color: #ffffff !important;
         }
 
-        /* Navbar chat button (hidden until login) */
         #nav-chat-btn {
             display: none;
             gap: 6px;
@@ -854,7 +823,6 @@
             padding: 0 4px;
         }
 
-        /* Modern floating chat panel */
         #chat-card {
             position: fixed !important;
             right: 20px;
@@ -874,7 +842,6 @@
             display: flex !important;
         }
 
-        /* Chat sidebar */
         #chat-sidebar {
             width: 240px;
             min-width: 240px;
@@ -927,7 +894,6 @@
         .conv-name { font-size: 0.82rem; font-weight: 600; color: #1a1a2e; }
         .conv-last { font-size: 0.72rem; color: #8a8fa8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
 
-        /* Chat main area */
         #chat-main {
             flex: 1;
             display: flex;
@@ -1041,10 +1007,8 @@
         #chat-send-btn:hover { background: #3651d4; transform: scale(1.06); }
         #chat-send-btn:active { transform: scale(0.95); }
 
-        /* Lock page scroll while on login */
         .login-locked { overflow: hidden !important; height: 100vh !important; }
 
-        /* Cielo theme: shades of blue, black text */
         body.theme-cielo {
             background: linear-gradient(135deg, #e6f4ff 0%, #cfe9ff 50%, #b6ddff 100%);
             color: #000000;
@@ -1063,7 +1027,6 @@
         }
         body.theme-cielo a { color: #004b8d; }
 
-        /* Natura theme: light/normal greens, black text */
         body.theme-natura {
             background: linear-gradient(135deg, #e9f9ec 0%, #d6f7d6 50%, #bfeec0 100%);
             color: #000000;
@@ -1082,7 +1045,6 @@
         }
         body.theme-natura a { color: #145214; }
 
-        /* Sole theme: warm yellow/orange accents, black text */
         body.theme-sole {
             background: linear-gradient(135deg, #fff9e6 0%, #fff4cc 50%, #ffe89a 100%);
             color: #000000;
@@ -1101,7 +1063,6 @@
         }
         body.theme-sole a { color: #4a3410; }
 
-        /* Terra theme: earth/beige tones, black text */
         body.theme-terra {
             background: linear-gradient(135deg, #fbf7ef 0%, #f2e8d0 50%, #e6d6b2 100%);
             color: #000000;
@@ -1441,8 +1402,6 @@
                     <button class="btn btn-primary btn-sm" onclick="submitDisplayNameChange()">Aggiorna nome</button>
                 </div>
 
-                <!-- Chat moved to global floating panel -->
-
                 <div class="card p-3 shadow-sm mb-3 border-danger">
                     <h6 class="fw-bold mb-3 text-danger">⚠️ Elimina Account</h6>
                     <p class="text-muted small mb-3">Per eliminare il tuo account inserisci le tue credenziali di accesso. Questa operazione è irreversibile.</p>
@@ -1545,7 +1504,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Step 1: Request code -->
                     <div id="reset-step1">
                         <p class="text-muted small mb-3">Inserisci la tua email. Riceverai un codice di verifica a 6 cifre valido per 5 minuti.</p>
                         <div class="mb-3">
@@ -1554,7 +1512,6 @@
                         </div>
                         <button type="button" onclick="requestResetCode()" class="btn btn-primary w-100">Invia codice di verifica</button>
                     </div>
-                    <!-- Step 2: Enter code + new password -->
                     <div id="reset-step2" style="display:none;">
                         <div class="alert alert-success py-2 small mb-3" id="reset-code-demo-alert"></div>
                         <div class="mb-3">
@@ -1587,11 +1544,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Chat button moved to navbar (top-right). -->
-
-    <!-- Global floating chat panel -->
     <div id="chat-card" class="card shadow-lg">
-        <!-- Sidebar: user list -->
         <div id="chat-sidebar">
             <div id="chat-sidebar-header">
                 <div class="d-flex align-items-center justify-content-between">
@@ -1601,7 +1554,6 @@
             </div>
             <div id="conversations-list"></div>
         </div>
-        <!-- Main chat area -->
         <div id="chat-main">
             <div id="chat-header">
                 <div id="chat-header-info" class="d-flex align-items-center gap-2">
@@ -1628,6 +1580,7 @@
 
     <script>
         let currentUser = "";
+        let _spacesMap = {};
         let currentRole = "";
         let selectedSpaceId = null;
         let selectedSpaceName = "";
@@ -1639,7 +1592,6 @@
         let registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
         let resetPasswordModal = new bootstrap.Modal(document.getElementById('resetPasswordModal'));
 
-        // RE-DESIGN FUNZIONE DI DIALOG ALERT (Alto al centro, stile pulito con risposta OK)
         function customAlert(message) {
             const oldBox = document.getElementById('custom-alert-box');
             if (oldBox) oldBox.remove();
@@ -1664,14 +1616,12 @@
             `;
             document.body.appendChild(alertDiv);
         }
-        // Override nativo dell'alert standard browser
         window.alert = customAlert;
 
         function openRegisterModal(event) {
             event.preventDefault();
             document.getElementById('reg-email').value = '';
             document.getElementById('reg-password').value = '';
-            // Temporarily remove login scroll lock so Bootstrap modal centers correctly
             document.body.classList.remove('login-locked');
             registerModal.show();
         }
@@ -1718,7 +1668,6 @@
             .catch(err => alert('Errore: ' + err.message));
         }
 
-        // ── Validazione password client-side ──────────────────────────────────
         function validatePassword(password) {
             const errors = [];
             if (password.length < 8) errors.push("Minimo 8 caratteri.");
@@ -1766,7 +1715,6 @@
             .catch(err => alert("Errore: " + err.message));
         }
 
-        // Re-apply login lock when register modal is fully hidden (if login still visible)
         document.getElementById('registerModal').addEventListener('hidden.bs.modal', function() {
             const loginSec = document.getElementById('login-section');
             if (loginSec && loginSec.style.display !== 'none') {
@@ -1841,10 +1789,8 @@
             document.getElementById('profile-section').style.display = 'none';
             document.getElementById('admin-panel').style.display = 'none';
             document.getElementById('login-section').style.display = 'flex';
-            // hide navbar chat button and lock page scroll on login
             const navChatBtnHide = document.getElementById('nav-chat-btn'); if (navChatBtnHide) navChatBtnHide.style.display = 'none';
             document.body.classList.add('login-locked');
-            // hide global footer on login page
             const gfHide = document.getElementById('global-footer'); if (gfHide) gfHide.style.display = 'none';
             localStorage.removeItem('loggedUser');
             localStorage.removeItem('loggedRole');
@@ -1857,13 +1803,10 @@
             document.getElementById('app-nav').style.display = 'block';
             document.getElementById('main-section').style.display = 'block';
             document.getElementById('profile-section').style.display = 'none';
-            // enable navbar chat button and restore page scroll
             const navChatBtn = document.getElementById('nav-chat-btn'); if (navChatBtn) navChatBtn.style.display = 'flex';
             document.body.classList.remove('login-locked');
-            // show global footer on app pages
             const gf = document.getElementById('global-footer'); if (gf) gf.style.display = 'block';
-            // populate equipment filter when showing the app
-            populateEquipmentFilter();
+            loadEquipmentFilter();
             if(role === 'admin') {
                 document.getElementById('admin-panel').style.display = 'block';
                 loadAdminSpaces();
@@ -1886,15 +1829,13 @@
                 currentRole = storedRole;
                 showAppLayout(storedDisplayName || storedUser, storedRole);
                 loadSpaces();
-                populateEquipmentFilter();
+                loadEquipmentFilter();
                 loadMyBookings();
                 checkNotifications(currentUser);
                 checkInvitations(currentUser);
-                // show navbar chat button for logged users
                 const navChatBtnInit = document.getElementById('nav-chat-btn');
                 if (navChatBtnInit) navChatBtnInit.style.display = 'flex';
             }
-            // Lock scroll if login is visible and toggle footer
             const loginSec = document.getElementById('login-section');
             const gfInit = document.getElementById('global-footer');
             if (loginSec && loginSec.style.display !== 'none') {
@@ -1906,53 +1847,6 @@
             }
         }
 
-        // POPOLA IL MENU DOTAZIONI A PARTIRE DA TUTTE LE AULE
-        function populateEquipmentFilter() {
-            fetch('/api/spaces')
-            .then(res => res.json())
-            .then(spaces => {
-                const set = new Set();
-                spaces.forEach(s => {
-                    if (s.equipment) {
-                        s.equipment.split(',').forEach(part => {
-                            const item = part.trim();
-                            if (item) set.add(item);
-                        });
-                    }
-                });
-                const sel = document.getElementById('filter-equipment');
-                if (!sel) return;
-                // clear existing (leave first option)
-                const existingFirst = sel.querySelector('option');
-                sel.innerHTML = '';
-                sel.appendChild(existingFirst || document.createElement('option'));
-                if (!existingFirst) {
-                    sel.options[0].value = '';
-                    sel.options[0].text = 'Tutte le dotazioni';
-                } else {
-                    sel.options[0].value = '';
-                    sel.options[0].text = 'Tutte le dotazioni';
-                }
-                // normalize values to lowercase for uniqueness, display in Title Case
-                function titleCase(str) {
-                    return str.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
-                }
-                const normalized = {};
-                Array.from(set).forEach(raw => {
-                    const key = raw.toLowerCase();
-                    if (!normalized[key]) normalized[key] = raw;
-                });
-                Object.keys(normalized).sort().forEach(key => {
-                    const display = titleCase(normalized[key]);
-                    const opt = document.createElement('option');
-                    opt.value = key; // lowercase value for matching
-                    opt.text = display;
-                    sel.appendChild(opt);
-                });
-            })
-            .catch(err => console.error('Errore caricamento dotazioni:', err));
-        }
-
         function togglePasswordVisibility(inputId, btn) {
             const input = document.getElementById(inputId);
             if (!input) return;
@@ -1960,7 +1854,6 @@
             input.type = isHidden ? 'text' : 'password';
             const svg = btn.querySelector('svg');
             if (svg) {
-                // Occhio aperto (visibile) vs occhio sbarrato (nascosto)
                 svg.innerHTML = isHidden
                     ? '<path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.944 5.944 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.709z"/><path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z"/><path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709z"/><path fill-rule="evenodd" d="M13.646 14.354l-12-12 .708-.708 12 12-.708.708z"/>'
                     : '<path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>';
@@ -1973,6 +1866,7 @@
             if (!currentUser) return;
             document.getElementById('profile-section').style.display = 'none';
             document.getElementById('main-section').style.display = 'block';
+            loadEquipmentFilter();
             loadSpaces();
             loadMyBookings();
             if(currentRole === 'admin') {
@@ -2071,7 +1965,6 @@
                         document.getElementById('profile-top-room').innerText = topRoom;
                     }
                 });
-                // carica la lista conversazioni per l'utente
                 loadConversations();
             })
             .catch(err => alert('Errore caricamento profilo: ' + err.message));
@@ -2401,7 +2294,6 @@
             });
         }
 
-        // VERIFICA INVITI RICEVUTI ALL'ACCESSO
         function checkInvitations(user) {
             fetch(`/api/auth/invitations?user=${encodeURIComponent(user)}`)
             .then(res => res.json())
@@ -2465,7 +2357,6 @@
                 if (status === 'accepted') {
                     loadMyBookings();
                 }
-                // Mostra breve toast di conferma
                 const msg = status === 'accepted' ? '✅ Invito accettato! La prenotazione è ora visibile nelle tue prenotazioni.' : '❌ Invito declinato.';
                 customAlert(msg);
                 presentNextInvitation();
@@ -2475,7 +2366,31 @@
             });
         }
 
-        // CARICAMENTO STANZE CON FILTRO NOME E CAPIENZA
+        function loadEquipmentFilter() {
+            fetch('/api/spaces/equipment')
+            .then(res => res.json())
+            .then(items => {
+                const sel = document.getElementById('filter-equipment');
+                if (!sel) return;
+                const currentVal = sel.value;
+                sel.innerHTML = '<option value="">Tutte le dotazioni</option>';
+                function titleCase(str) {
+                    return str.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+                }
+                items.forEach(raw => {
+                    const opt = document.createElement('option');
+                    opt.value = raw.toLowerCase();
+                    opt.textContent = titleCase(raw);
+                    sel.appendChild(opt);
+                });
+                if (currentVal) {
+                    const exists = Array.from(sel.options).some(opt => opt.value === currentVal);
+                    if (exists) sel.value = currentVal;
+                }
+            })
+            .catch(err => console.error('Errore caricamento dotazioni:', err));
+        }
+
         function loadSpaces() {
             const capacity = document.getElementById('filter-capacity').value || 0;
             const nameSearch = document.getElementById('filter-name').value || "";
@@ -2484,7 +2399,6 @@
             fetch(`/api/spaces?capacity=${capacity}&name=${encodeURIComponent(nameSearch)}&location=${encodeURIComponent(selectedLocation)}`)
             .then(res => res.json())
             .then(spaces => {
-                // if equipment filter selected, apply client-side filtering (API doesn't support equipment query)
                 let filtered = spaces;
                 if (selectedEquipment) {
                     filtered = spaces.filter(s => {
@@ -2499,6 +2413,7 @@
                     return;
                 }
                 filtered.forEach(s => {
+                    _spacesMap[s.id] = s;
                     list.innerHTML += `
                         <div class="list-group-item d-flex justify-content-between align-items-start p-3 mb-2 border rounded shadow-sm bg-white">
                             <div>
@@ -2506,15 +2421,16 @@
                                 <small class="text-muted d-block">Sede: ${s.location || 'Non specificata'}</small>
                                 <small class="text-muted d-block">Dotazione: ${s.equipment || 'Nessuna'}</small>
                             </div>
-                            <button onclick="openBookingTimeline(${s.id}, '${s.name}')" class="btn btn-success btn-sm px-3 fw-semibold">Seleziona</button>
+                            <button onclick="openBookingTimeline(${s.id})" class="btn btn-success btn-sm px-3 fw-semibold">Seleziona</button>
                         </div>
                     `;
                 });
             });
         }
 
-        // APERTURA INTERFACCIA RIQUADRO AZZURRO TIMELINE
-        function openBookingTimeline(spaceId, spaceName) {
+        function openBookingTimeline(spaceId) {
+            const space = _spacesMap[spaceId] || {};
+            const spaceName = space.name || ('Aula #' + spaceId);
             selectedSpaceId = spaceId;
             selectedSpaceName = spaceName;
             
@@ -2526,7 +2442,6 @@
                 else document.getElementById('book-date').value = new Date().toISOString().split('T')[0];
             }
 
-            // Imposta 08:00 come orario di inizio default
             if (window._fpTime) {
                 _fpTime.setDate('1970-01-01 08:00', true);
             } else {
@@ -2545,7 +2460,6 @@
             selectedSpaceId = null;
         }
 
-        // CALCOLO E GENERAZIONE SLOT LINEA TEMPORALE DALLE 8:00 ALLE 18:00
         function updateTimelineData() {
             if (!selectedSpaceId) return;
             const targetDate = document.getElementById('book-date').value;
@@ -2557,7 +2471,6 @@
                 const container = document.getElementById('daily-timeline-container');
                 container.innerHTML = "";
                 
-                // Iterazione per fasce orarie da 1 ora dalle 08:00 alle 18:00
                 for (let h = 8; h < 18; h++) {
                     const strHourStart = String(h).padStart(2, '0') + ":00";
                     const strHourEnd = String(h + 1).padStart(2, '0') + ":00";
@@ -2602,7 +2515,6 @@
             
             if(!date || !time) return alert("Inserisci una data e un orario validi.");
 
-            // Validazione orario: solo dalle 08:00 alle 18:00
             const [startHour, startMin] = time.split(':').map(Number);
             const startMinutes = startHour * 60 + startMin;
             const endMinutes = startMinutes + parseInt(duration) * 60;
@@ -2615,7 +2527,6 @@
 
             const formattedStartTime = `${date} ${time}`;
             
-            // Generazione array invitati pulito da spazi vuoti o duplicati
             const invitedUsers = invitesText.split(',')
                                             .map(u => u.trim())
                                             .filter(u => u.length > 0 && u !== currentUser);
@@ -2673,7 +2584,6 @@
             });
         }
 
-        // AMMINISTRAZIONE: LISTA STANZE CON AZIONE MODIFICA AGGIUNTIVA
         function loadAdminSpaces() {
             fetch('/api/spaces/all-admin')
             .then(res => res.json())
@@ -2685,6 +2595,7 @@
                     const dotClass = isActive ? 'dot-active' : 'dot-inactive';
                     const statusText = isActive ? 'Attivo' : 'In Manutenzione';
                     
+                    _spacesMap[s.id] = s;
                     list.innerHTML += `
                         <div class="list-group-item d-flex justify-content-between align-items-center p-2 mb-1 border-0 border-bottom">
                             <div>
@@ -2693,7 +2604,7 @@
                                 <br><small class="text-muted">Capienza: ${s.capacity} | Dotazioni: ${s.equipment || 'Nessuna'}</small>
                             </div>
                             <div>
-                                <button onclick="populateEditSpaceForm(${s.id}, '${s.name}', ${s.capacity}, '${s.equipment}', '${s.location || 'Regesta'}')" class="btn btn-info text-white btn-sm py-0 px-2 me-1" style="font-size:11px;">Modifica</button>
+                                <button onclick="populateEditSpaceForm(${s.id})" class="btn btn-info text-white btn-sm py-0 px-2 me-1" style="font-size:11px;">Modifica</button>
                                 <button onclick="toggleSpace(${s.id})" class="btn btn-warning btn-sm py-0 px-2 me-1" style="font-size:11px;">Inverti Stato</button>
                                 <button onclick="deleteSpace(${s.id})" class="btn btn-danger btn-sm py-0 px-2" style="font-size:11px;">Elimina</button>
                             </div>
@@ -2703,14 +2614,14 @@
             });
         }
 
-        // AMMINISTRAZIONE: ATTIVAZIONE MODALITÀ MODIFICA DATI AULA
-        function populateEditSpaceForm(id, name, capacity, equipment, location = 'Regesta') {
+        function populateEditSpaceForm(id) {
+            const s = _spacesMap[id] || {};
             document.getElementById('admin-form-title').innerText = "🔧 Modifica Caratteristiche Spazio";
             document.getElementById('admin-edit-space-id').value = id;
-            document.getElementById('new-space-name').value = name;
-            document.getElementById('new-space-capacity').value = capacity;
-            document.getElementById('new-space-features').value = equipment;
-            document.getElementById('new-space-location').value = location || 'Regesta';
+            document.getElementById('new-space-name').value = s.name || '';
+            document.getElementById('new-space-capacity').value = s.capacity || '';
+            document.getElementById('new-space-features').value = s.equipment || '';
+            document.getElementById('new-space-location').value = s.location || 'Regesta';
             
             document.getElementById('admin-action-buttons').innerHTML = `
                 <button onclick="submitUpdateSpace()" class="btn btn-success btn-sm mt-1 fw-bold">Salva Modifiche</button>
@@ -2887,7 +2798,6 @@
             .catch(err => alert("Errore: " + err.message));
         }
 
-        // Close panels when clicking outside (theme, notifications, mascot)
         document.addEventListener('click', function(e) {
             try {
                 const themePanel = document.getElementById('theme-panel');
@@ -2905,7 +2815,6 @@
             } catch (err) { /* ignore */ }
         });
 
-        // Mascot functionality
         const mascotMessages = [
             "Ciao! Sono Pinguino, ricorda di fare una pausa ogni tanto 🐧",
             "Battuta: Perché il pinguino non usa il computer? Perché preferisce il 'flap'! 😄",
@@ -2972,12 +2881,10 @@
             if (panel) panel.style.display = 'none';
         }
 
-        // --- Chat functions ---
         let currentChatWith = null;
-        let _lastMsgId = null;        // ultimo id messaggio noto (evita re-render inutili)
-        let _chatUserScrolled = false; // l'utente ha scrollato manualmente verso l'alto
+        let _lastMsgId = null;
+        let _chatUserScrolled = false;
 
-        // Genera un colore avatar deterministico dall'username
         function _avatarColor(username) {
             const palette = ['#4361ee','#7209b7','#f72585','#4cc9f0','#3a0ca3','#480ca8','#b5179e','#06d6a0','#ef476f','#ffd166'];
             let h = 0;
@@ -2987,7 +2894,9 @@
 
         function _msgTimeFormat(ts) {
             try {
-                const d = new Date(ts);
+                const normalized = (ts || '').replace(' ', 'T').replace(/(\.\d{3})\d+$/, '$1');
+                const d = new Date(normalized);
+                if (isNaN(d.getTime())) return '';
                 const now = new Date();
                 const diffDays = Math.floor((now - d) / 86400000);
                 if (diffDays === 0) return d.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
@@ -3009,7 +2918,6 @@
             }
         }
 
-        // ── Chat di gruppo "Tutti" ─────────────────────────────────────────────
         let _groupLastMsgId = null;
 
         function openGroupChat() {
@@ -3096,7 +3004,6 @@
                 const el = document.getElementById('conversations-list');
                 el.innerHTML = '';
 
-                // ── "Tutti" group chat at the very top ────────────────────────
                 const isGroupActive = currentChatWith === '__GROUP__' ? ' active' : '';
                 el.innerHTML = `
                     <div class="conv-item${isGroupActive}" id="conv-item-tutti" onclick="openGroupChat()">
@@ -3111,7 +3018,6 @@
                 (convList || []).forEach(c => { convMap[c.user] = c; });
                 const others = (allUsers || []).filter(u => u.username !== currentUser && u.username !== '__TUTTI__');
                 if (others.length === 0) return;
-                // Sort: unread first, then those with conversations, then rest
                 others.sort((a, b) => {
                     const au = (convMap[a.username] || {}).unread || 0;
                     const bu = (convMap[b.username] || {}).unread || 0;
@@ -3146,7 +3052,6 @@
 
         function openConversation(withUser) {
             currentChatWith = withUser;
-            // Aggiorna header
             const headerInfo = document.getElementById('chat-header-info');
             if (headerInfo) {
                 const initial = withUser.charAt(0).toUpperCase();
@@ -3158,18 +3063,15 @@
                         <div style="font-size:10px; color:#9ca3af;">Conversazione privata</div>
                     </div>`;
             }
-            // Mostra loading
             const box = document.getElementById('chat-messages');
             const emptyState = document.getElementById('chat-empty-state');
             if (emptyState) emptyState.style.display = 'none';
             box.innerHTML = '<div class="d-flex justify-content-center align-items-center h-100"><div class="spinner-border spinner-border-sm text-primary" style="opacity:0.5;"></div></div>';
-            _lastMsgId = null; // reset per forzare il primo render
+            _lastMsgId = null;
             loadMessages(withUser, true);
-            // Aggiorna active class nella sidebar
             document.querySelectorAll('.conv-item').forEach(el => {
                 el.classList.toggle('active', el.getAttribute('onclick') && el.getAttribute('onclick').includes(`'${withUser}'`));
             });
-            // Segna come letti
             fetch('/api/auth/messages/read', {
                 method: 'PUT', headers: {'Content-Type':'application/json'},
                 body: JSON.stringify({ user: currentUser, with_user: withUser })
@@ -3207,7 +3109,6 @@
                 box.appendChild(row);
             });
             _lastMsgId = msgs[msgs.length - 1].id;
-            // Scrolla in fondo solo se l'utente era già in fondo, oppure se forzato (primo caricamento / messaggio inviato)
             if (forceScroll || atBottom) box.scrollTop = box.scrollHeight;
         }
 
@@ -3217,20 +3118,18 @@
             .then(res => { if (!res.ok) throw new Error(res.status); return res.json(); })
             .then(msgs => {
                 const newLastId = (msgs && msgs.length) ? msgs[msgs.length - 1].id : null;
-                // Se non ci sono nuovi messaggi e non è un caricamento forzato, non ri-renderizzare
                 if (!forceScroll && newLastId === _lastMsgId) return;
                 const box = document.getElementById('chat-messages');
                 if (!box) return;
                 _renderMessages(msgs, box, forceScroll);
             })
-            .catch(() => { /* errore silenzioso durante il polling */ });
+            .catch(() => {});
         }
 
         function _escapeHtml(str) {
             return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
         }
 
-        // Auto-refresh messaggi e conversazioni in tempo reale (2s)
         setInterval(() => {
             const chatCard = document.getElementById('chat-card');
             if (chatCard && chatCard.classList.contains('floating')) {
@@ -3243,7 +3142,6 @@
             }
         }, 2000);
 
-        // Auto-refresh notifiche in tempo reale (stesso intervallo della chat)
         setInterval(() => {
             if (currentUser) {
                 checkNotifications(currentUser);
@@ -3263,7 +3161,6 @@
             loadConversations();
         }
 
-        // close chat when clicking outside (but ignore clicks on the navbar chat button)
         document.addEventListener('click', function(e) {
             try {
                 const chatCard = document.getElementById('chat-card');
@@ -3276,7 +3173,6 @@
             } catch (err) { /* ignore */ }
         });
 
-        // Prompt and remove friend with security notification
         function promptRemoveFriend(target) {
             if (!currentUser) return alert('Devi essere loggato per rimuovere un amico.');
             const ok = confirm(`Sei sicuro di voler rimuovere l'amicizia con ${target}? Verrà inviata una notifica di sicurezza.`);
@@ -3300,39 +3196,34 @@
             .catch(err => alert('Errore: ' + err.message));
         }
 
-        // ── Flatpickr: picker data/ora cross-browser ─────────────────────────
         (function initFlatpickr() {
             if (typeof flatpickr === 'undefined') return;
 
-            // Locale italiano (se caricato via CDN)
             const locale = (flatpickr.l10ns && flatpickr.l10ns.it) ? flatpickr.l10ns.it : 'default';
 
-            // Picker DATA
             window._fpDate = flatpickr('#book-date', {
                 locale: locale,
-                dateFormat: 'Y-m-d',       // YYYY-MM-DD — compatibile con il backend
+                dateFormat: 'Y-m-d',
                 allowInput: false,
-                disableMobile: true,        // usa sempre il picker custom, mai il nativo mobile
+                disableMobile: true,
                 onChange: function() {
                     updateTimelineData();
                 }
             });
 
-            // Picker ORA (solo orologio, nessun calendario)
             window._fpTime = flatpickr('#book-time', {
                 enableTime: true,
                 noCalendar: true,
-                dateFormat: 'H:i',         // HH:MM 24h — compatibile con il backend
+                dateFormat: 'H:i',
                 time_24hr: true,
                 minuteIncrement: 30,
                 minTime: '08:00',
-                maxTime: '18:00',
+                maxTime: '17:00',
                 defaultHour: 8,
                 defaultMinute: 0,
                 disableMobile: true
             });
 
-            // Imposta subito 08:00 nel campo ora (corrisponde al default nativo)
             if (window._fpTime) _fpTime.setDate('1970-01-01 08:00', true);
         })();
     </script>

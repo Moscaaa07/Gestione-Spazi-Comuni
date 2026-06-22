@@ -47,6 +47,20 @@ def list_active_spaces(
     return [_serialize(s) for s in spaces]
 
 
+@router.get("/equipment")
+def list_all_equipment(db: Session = Depends(get_db)):
+    """Restituisce tutte le dotazioni uniche presenti nel database (da tutti gli spazi)."""
+    spaces = db.query(Space).all()
+    equipment_set = set()
+    for s in spaces:
+        if s.equipment:
+            for part in s.equipment.split(","):
+                item = part.strip()
+                if item:
+                    equipment_set.add(item)
+    return sorted(equipment_set, key=lambda x: x.lower())
+
+
 @router.get("/all-admin")
 def list_all_spaces(db: Session = Depends(get_db)):
     """Admin: restituisce tutti gli spazi (attivi e non)."""
