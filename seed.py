@@ -18,6 +18,7 @@ for email, pwd, name in admins:
 
 # ─── Utenti di esempio ──────────────────────────────────────────────────────
 users = [
+    ("luca@user.com", "Lucaa26?", "luca@user.com"),
 ]
 for email, pwd, name in users:
     if not db.query(User).filter(User.username == email).first():
