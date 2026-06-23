@@ -13,7 +13,7 @@ A web application for booking and managing shared spaces (meeting rooms, study h
 - 💬 **Chat** — private one-to-one messaging and a shared group chat ("Everyone")
 - 🤝 **Friends** — send, accept, or remove friend connections
 - 👤 **Profile** — update display name, change password, view booking history, delete account
-- 🎨 **Themes** — 8 visual themes (Light, Dark, Neon, Retro, Sky, Nature, Sun, Earth)
+- 🎨 **Themes** — 8 visual themes (Light, Neon, Retro, Sky, Nature, Sun, Earth)
 
 ### For administrators
 - 🏗️ **Space management** — create, edit, toggle maintenance mode, or delete spaces (with automatic cancellation notifications)
